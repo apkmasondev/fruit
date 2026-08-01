@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
-import HeroProductSilhouette from './components/HeroProductSilhouette'
 import LiquidDivider from './components/LiquidDivider'
 
 const VIDEO_ONE = `${import.meta.env.BASE_URL}video/01-hand-energy-reveal-gop1.mp4`
 const VIDEO_TWO = `${import.meta.env.BASE_URL}video/02-apkmason-beauty-shot-gop1.mp4`
 const HERO_FRUIT_CONSTELLATION = `${import.meta.env.BASE_URL}hero-fruit-constellation.png`
+const HERO_PRODUCT = `${import.meta.env.BASE_URL}apkmason-can.png`
 const FRUIT_ORBIT = `${import.meta.env.BASE_URL}fruit-orbit.png`
 
 type Beat = {
@@ -142,32 +142,40 @@ function App() {
 
       <main>
         <section className="hero" id="top" aria-labelledby="hero-title">
-          <HeroProductSilhouette />
-          <div className="hero-fruit-field" aria-hidden="true">
-            <img
-              className="hero-fruit-constellation"
-              src={HERO_FRUIT_CONSTELLATION}
-              alt=""
-              decoding="async"
-              fetchPriority="high"
-            />
-          </div>
-          <div className="hero-content">
-            <p className="hero-kicker">A fictional drink. A real current.</p>
-            <h1 id="hero-title">
-              <span>FRUIT</span>
-              <span>ENERGY</span>
-            </h1>
-            <div className="hero-footer">
+          <div className="hero-layout">
+            <div className="hero-copy">
+              <p className="hero-kicker">A fictional drink. A real current.</p>
+              <h1 id="hero-title">
+                <span>FRUIT</span>
+                <span>ENERGY</span>
+              </h1>
               <div className="hero-flavor-lockup">
                 <strong>Ruby Mango</strong>
                 <span>05 fruit blend / lightly sparkling</span>
               </div>
-              <a href="#story" className="scroll-cue">
-                <span>Scroll to release</span>
-                <span className="scroll-line" aria-hidden="true" />
-              </a>
             </div>
+            <div className="hero-visual" aria-hidden="true">
+              <img
+                className="hero-product"
+                src={HERO_PRODUCT}
+                alt=""
+                decoding="async"
+                fetchPriority="high"
+              />
+              <div className="hero-fruit-field">
+                <img
+                  className="hero-fruit-constellation"
+                  src={HERO_FRUIT_CONSTELLATION}
+                  alt=""
+                  decoding="async"
+                  fetchPriority="high"
+                />
+              </div>
+            </div>
+            <a href="#story" className="scroll-cue hero-scroll">
+              <span>Scroll to release</span>
+              <span className="scroll-line" aria-hidden="true" />
+            </a>
           </div>
         </section>
 

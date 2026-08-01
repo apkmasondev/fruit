@@ -108,10 +108,7 @@ a {
 
 .hero {
   position: relative;
-  display: flex;
   min-height: 100svh;
-  flex-direction: column;
-  justify-content: center;
   padding: 110px 4.3vw 40px;
   isolation: isolate;
   overflow: hidden;
@@ -125,84 +122,49 @@ a {
   content: "";
 }
 
-.hero-content {
+.hero-layout {
   position: relative;
-  z-index: 2;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 44fr) minmax(0, 56fr);
+  align-items: center;
   width: 100%;
   max-width: 1920px;
+  min-height: calc(100svh - 150px);
   margin-inline: auto;
+}
+
+.hero-copy {
+  position: relative;
+  z-index: 4;
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.hero-visual {
+  position: relative;
+  z-index: 1;
+  grid-column: 2;
+  grid-row: 1;
+  align-self: stretch;
+  min-height: min(70svh, 760px);
+  isolation: isolate;
 }
 
 .hero-product {
   position: absolute;
-  z-index: 0;
-  top: 49%;
-  left: 48%;
-  width: min(clamp(156px, 14vw, 260px), 28svh);
-  aspect-ratio: 0.47;
+  z-index: 2;
+  top: 50%;
+  left: 50%;
+  width: min(clamp(180px, 17vw, 300px), 31svh);
+  height: auto;
+  object-fit: contain;
   pointer-events: none;
+  user-select: none;
+  filter: drop-shadow(0 36px 44px rgba(0, 0, 0, 0.6));
   transform: translate(-50%, -50%);
   animation: hero-product-reveal 1.6s cubic-bezier(0.16, 1, 0.3, 1) 120ms both;
 }
-
-.hero-can {
-  position: absolute;
-  inset: 0;
-  border: 1px solid rgba(255, 255, 255, 0.21);
-  border-radius: 12% / 5%;
-  background:
-    linear-gradient(100deg, transparent 47%, rgba(223, 255, 63, 0.13) 51%, transparent 56%),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.23) 13%, rgba(255, 255, 255, 0.025) 31%, rgba(255, 61, 141, 0.07) 52%, rgba(255, 255, 255, 0.03) 69%, rgba(255, 255, 255, 0.18) 88%, rgba(255, 255, 255, 0.02));
-  box-shadow:
-    inset 16px 0 30px rgba(255, 255, 255, 0.025),
-    inset -16px 0 30px rgba(0, 0, 0, 0.32),
-    0 32px 80px rgba(0, 0, 0, 0.42);
-  opacity: 0.54;
-  overflow: hidden;
-  transform: rotate(4deg);
-  animation: hero-can-breathe 9s ease-in-out infinite alternate;
-}
-
-.hero-can::after {
-  position: absolute;
-  top: 10%;
-  bottom: 9%;
-  left: 18%;
-  width: 1px;
-  background: linear-gradient(transparent, rgba(255, 255, 255, 0.42), transparent);
-  box-shadow: 8px 0 14px rgba(255, 255, 255, 0.14);
-  content: "";
-}
-
-.hero-can__rim {
-  position: absolute;
-  z-index: 2;
-  right: 4%;
-  left: 4%;
-  height: 3.5%;
-  border: 1px solid rgba(255, 255, 255, 0.42);
-  border-radius: 50%;
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.32), rgba(255, 255, 255, 0.04));
-}
-
-.hero-can__rim--top { top: 0.2%; }
-.hero-can__rim--bottom { bottom: 0.2%; }
-
-.hero-can__drop {
-  position: absolute;
-  display: block;
-  width: 5px;
-  height: 7px;
-  border: 1px solid rgba(255, 255, 255, 0.42);
-  border-radius: 50% 50% 55% 45%;
-  background: radial-gradient(circle at 32% 24%, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.05) 54%, transparent 58%);
-  box-shadow: 1px 2px 4px rgba(0, 0, 0, 0.3);
-}
-
-.hero-can__drop--one { top: 17%; left: 28%; }
-.hero-can__drop--two { top: 32%; right: 22%; width: 4px; height: 6px; }
-.hero-can__drop--three { top: 61%; left: 20%; width: 6px; height: 9px; }
-.hero-can__drop--four { right: 28%; bottom: 18%; }
 
 @keyframes hero-product-reveal {
   from {
@@ -218,13 +180,9 @@ a {
   }
 }
 
-@keyframes hero-can-breathe {
-  to { transform: translateY(-7px) rotate(2deg); }
-}
-
 .hero-fruit-field {
   position: absolute;
-  z-index: 1;
+  z-index: 3;
   inset: 0;
   overflow: hidden;
   pointer-events: none;
@@ -233,10 +191,10 @@ a {
 
 .hero-fruit-field::before {
   position: absolute;
-  inset: 13% 13% 10%;
-  opacity: 0.62;
+  inset: 8% 3% 6%;
+  opacity: 0.66;
   background: conic-gradient(from 218deg at 49% 52%, rgba(255, 61, 110, 0.36), rgba(255, 138, 50, 0.34) 31%, rgba(223, 255, 63, 0.14) 52%, rgba(255, 61, 141, 0.26) 76%, rgba(167, 25, 72, 0.3));
-  filter: blur(48px);
+  filter: blur(54px);
   -webkit-mask-image: radial-gradient(ellipse 62% 56% at 49% 52%, #000 12%, rgba(0, 0, 0, 0.82) 48%, transparent 78%);
   mask-image: radial-gradient(ellipse 62% 56% at 49% 52%, #000 12%, rgba(0, 0, 0, 0.82) 48%, transparent 78%);
   content: "";
@@ -245,9 +203,9 @@ a {
 
 .hero-fruit-constellation {
   position: absolute;
-  top: 49%;
+  top: 50%;
   left: 50%;
-  width: min(62vw, 1050px);
+  width: min(118%, 980px);
   height: auto;
   opacity: 0.82;
   pointer-events: none;
@@ -300,8 +258,8 @@ a {
   display: flex;
   width: 100%;
   flex-direction: column;
-  font-size: min(clamp(5.6rem, 17vw, 17rem), 32svh);
-  line-height: 0.72;
+  font-size: min(clamp(5.25rem, 10.2vw, 13rem), 25svh);
+  line-height: 0.78;
   letter-spacing: -0.055em;
 }
 
@@ -314,8 +272,7 @@ a {
 }
 
 .hero h1 span:last-child {
-  align-self: flex-end;
-  margin-right: clamp(12px, 1.25vw, 24px);
+  align-self: flex-start;
   color: transparent;
   background: linear-gradient(92deg, #ff3d8d 10%, #ff713b 39%, #dfff3f 72%, #8dff62 96%);
   background-size: 150% 100%;
@@ -328,18 +285,10 @@ a {
   to { background-position: 100% 50%; }
 }
 
-.hero-footer {
-  position: relative;
-  display: flex;
-  align-items: end;
-  justify-content: space-between;
-  margin-top: clamp(2rem, 5vw, 5rem);
-  padding: 0 0.5vw;
-}
-
 .hero-flavor-lockup {
   display: grid;
   gap: 0.48rem;
+  margin-top: clamp(2rem, 5vh, 4rem);
   padding-left: 14px;
   border-left: 2px solid var(--pink);
   text-transform: uppercase;
@@ -367,6 +316,13 @@ a {
   text-transform: uppercase;
 }
 
+.hero-scroll {
+  position: absolute;
+  z-index: 5;
+  right: 0;
+  bottom: 0;
+}
+
 .scroll-line {
   position: relative;
   width: 64px;
@@ -386,38 +342,6 @@ a {
 @keyframes scroll-line {
   0% { transform: translateX(-100%); }
   60%, 100% { transform: translateX(100%); }
-}
-
-@media (min-width: 1180px) and (min-height: 680px) {
-  .hero h1 {
-    align-items: center;
-    justify-content: space-between;
-    flex-direction: row;
-    font-size: min(clamp(6rem, 10.5vw, 13rem), 26svh);
-    line-height: 0.78;
-  }
-
-  .hero h1 span:last-child {
-    align-self: auto;
-  }
-
-  .hero-product {
-    top: 50%;
-    width: min(clamp(165px, 13.5vw, 260px), 27svh);
-  }
-
-  .hero-fruit-constellation {
-    top: 50%;
-    width: min(58vw, 980px);
-  }
-
-  .hero-kicker {
-    margin-bottom: clamp(1.5rem, 2.4vh, 2.25rem);
-  }
-
-  .hero-footer {
-    margin-top: clamp(2.5rem, 4.5vh, 4.5rem);
-  }
 }
 
 .story {
@@ -1345,23 +1269,25 @@ noscript {
     padding: 100px 20px 28px;
   }
 
-  .hero h1 {
-    font-size: min(clamp(5rem, 22vw, 10rem), 28svh);
-    line-height: 0.79;
+  .hero-layout {
+    grid-template-columns: minmax(0, 46fr) minmax(0, 54fr);
+    min-height: calc(100svh - 128px);
   }
 
-  .hero h1 span:last-child {
-    align-self: flex-start;
+  .hero-visual {
+    min-height: min(64svh, 620px);
+  }
+
+  .hero h1 {
+    font-size: min(clamp(4.4rem, 10.5vw, 6.4rem), 24svh);
   }
 
   .hero-fruit-constellation {
-    top: 47%;
-    width: min(88vw, 760px);
+    width: min(124%, 720px);
   }
 
   .hero-product {
-    left: 50%;
-    width: min(clamp(138px, 20vw, 190px), 30svh);
+    width: min(clamp(150px, 19vw, 195px), 30svh);
   }
 
   .stage-chrome {
@@ -1433,73 +1359,70 @@ noscript {
 
 @media (max-width: 620px) {
   .hero {
-    justify-content: flex-start;
-    padding-top: clamp(165px, 27svh, 230px);
-    padding-bottom: 40px;
+    min-height: max(100svh, 760px);
+    padding: 96px 20px 28px;
+  }
+
+  .hero-layout {
+    display: flex;
+    min-height: calc(max(100svh, 760px) - 124px);
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .hero-copy {
+    width: 100%;
+  }
+
+  .hero-visual {
+    width: 100%;
+    min-height: 0;
+    height: clamp(300px, 78vw, 430px);
+    margin-top: 1.35rem;
   }
 
   .hero-kicker {
-    margin-bottom: 1.45rem;
+    margin-bottom: 1.2rem;
     font-size: 0.6rem;
     letter-spacing: 0.15em;
   }
 
   .hero h1 {
-    font-size: min(clamp(4rem, 21.5vw, 6.8rem), 22svh);
-    line-height: 0.83;
+    font-size: min(clamp(4.2rem, 22vw, 7.2rem), 20svh);
+    line-height: 0.79;
   }
 
   .hero-fruit-constellation {
-    top: clamp(95px, 16svh, 145px);
-    width: 94vw;
-  }
-
-  .hero-fruit-constellation {
-    opacity: 0.62;
+    top: 50%;
+    width: min(122%, 540px);
+    opacity: 0.74;
     -webkit-mask-image: radial-gradient(ellipse 64% 68% at 50% 52%, #000 28%, rgba(0, 0, 0, 0.76) 62%, transparent 100%);
     mask-image: radial-gradient(ellipse 64% 68% at 50% 52%, #000 28%, rgba(0, 0, 0, 0.76) 62%, transparent 100%);
   }
 
   .hero-fruit-field::before {
-    inset: 2% -12% 34%;
-    opacity: 0.5;
+    inset: 1% -14% 2%;
+    opacity: 0.56;
     filter: blur(34px);
   }
 
   .hero-product {
-    top: clamp(94px, 16svh, 140px);
+    top: 50%;
     left: 50%;
-    width: min(clamp(104px, 29vw, 132px), 27svh);
-    transform: translate(-50%, 0);
+    width: min(clamp(128px, 34vw, 174px), 34svh);
   }
 
-  .hero-can {
-    opacity: 0.42;
-  }
-
-  @keyframes hero-product-reveal {
-    from {
-      opacity: 0;
-      filter: blur(12px);
-      transform: translate(-50%, 14px) scale(0.96);
-    }
-
-    to {
-      opacity: 1;
-      filter: blur(0);
-      transform: translate(-50%, 0) scale(1);
-    }
-  }
-
-  .hero-footer {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 2.6rem;
-    margin-top: 2.75rem;
+  .hero-scroll {
+    position: relative;
+    right: auto;
+    bottom: auto;
+    align-self: flex-end;
+    margin-top: auto;
   }
 
   .hero-flavor-lockup {
     gap: 0.4rem;
+    margin-top: 1.65rem;
   }
 
   .story {
@@ -1648,8 +1571,7 @@ noscript {
 
   .liquid-divider__graphic,
   .liquid-divider__drop,
-  .hero-product,
-  .hero-can {
+  .hero-product {
     animation: none !important;
   }
 
