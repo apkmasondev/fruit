@@ -121,35 +121,8 @@ a {
   position: absolute;
   z-index: -3;
   inset: 0;
-  background:
-    radial-gradient(circle at 50% 48%, rgba(255, 76, 99, 0.08), transparent 32%),
-    linear-gradient(180deg, #090909, #030303 82%);
+  background: linear-gradient(180deg, #090909, #030303 82%);
   content: "";
-}
-
-.hero-orbit {
-  position: absolute;
-  z-index: -1;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 50%;
-  pointer-events: none;
-}
-
-.hero-orbit-one {
-  width: min(73vw, 980px);
-  aspect-ratio: 1.55;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) rotate(-7deg);
-}
-
-.hero-orbit-two {
-  width: min(45vw, 600px);
-  aspect-ratio: 1;
-  top: 50%;
-  left: 50%;
-  border-color: rgba(223, 255, 63, 0.1);
-  transform: translate(-50%, -50%) rotate(22deg);
 }
 
 .hero-product {
@@ -164,19 +137,10 @@ a {
   animation: hero-product-reveal 1.6s cubic-bezier(0.16, 1, 0.3, 1) 120ms both;
 }
 
-.hero-product::before {
-  position: absolute;
-  inset: -16% -70%;
-  opacity: 0.72;
-  background: radial-gradient(ellipse, rgba(255, 113, 59, 0.19), rgba(255, 61, 141, 0.08) 38%, transparent 70%);
-  filter: blur(24px);
-  content: "";
-}
-
 .hero-can {
   position: absolute;
   inset: 0;
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.21);
   border-radius: 12% / 5%;
   background:
     linear-gradient(100deg, transparent 47%, rgba(223, 255, 63, 0.13) 51%, transparent 56%),
@@ -185,19 +149,10 @@ a {
     inset 16px 0 30px rgba(255, 255, 255, 0.025),
     inset -16px 0 30px rgba(0, 0, 0, 0.32),
     0 32px 80px rgba(0, 0, 0, 0.42);
-  opacity: 0.48;
+  opacity: 0.54;
   overflow: hidden;
   transform: rotate(4deg);
   animation: hero-can-breathe 9s ease-in-out infinite alternate;
-}
-
-.hero-can::before {
-  position: absolute;
-  inset: 9% 14%;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 50%;
-  content: "";
-  transform: rotate(-18deg);
 }
 
 .hero-can::after {
@@ -217,7 +172,7 @@ a {
   right: 4%;
   left: 4%;
   height: 3.5%;
-  border: 1px solid rgba(255, 255, 255, 0.32);
+  border: 1px solid rgba(255, 255, 255, 0.42);
   border-radius: 50%;
   background: linear-gradient(90deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.32), rgba(255, 255, 255, 0.04));
 }
@@ -225,22 +180,11 @@ a {
 .hero-can__rim--top { top: 0.2%; }
 .hero-can__rim--bottom { bottom: 0.2%; }
 
-.hero-can__signal {
-  position: absolute;
-  top: 21%;
-  right: -22%;
-  width: 144%;
-  height: 58%;
-  border: 1px solid rgba(255, 61, 141, 0.22);
-  border-radius: 50%;
-  transform: rotate(-28deg);
-}
-
 .hero-can__identity {
   position: absolute;
   right: 12%;
   bottom: 14%;
-  color: rgba(255, 255, 255, 0.28);
+  color: rgba(255, 255, 255, 0.34);
   font-size: clamp(0.42rem, 0.48vw, 0.58rem);
   font-weight: 800;
   line-height: 1.4;
@@ -253,7 +197,7 @@ a {
   display: block;
   width: 5px;
   height: 7px;
-  border: 1px solid rgba(255, 255, 255, 0.34);
+  border: 1px solid rgba(255, 255, 255, 0.42);
   border-radius: 50% 50% 55% 45%;
   background: radial-gradient(circle at 32% 24%, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.05) 54%, transparent 58%);
   box-shadow: 1px 2px 4px rgba(0, 0, 0, 0.3);
@@ -293,17 +237,17 @@ a {
 
 .hero-fruit-field::before {
   position: absolute;
-  inset: 15% 12%;
-  opacity: 0.52;
-  background:
-    radial-gradient(circle at 40% 57%, rgba(255, 70, 99, 0.2), transparent 23%),
-    radial-gradient(circle at 61% 42%, rgba(223, 255, 63, 0.17), transparent 22%);
-  filter: blur(34px);
+  inset: 13% 13% 10%;
+  opacity: 0.62;
+  background: conic-gradient(from 218deg at 49% 52%, rgba(255, 61, 110, 0.36), rgba(255, 138, 50, 0.34) 31%, rgba(223, 255, 63, 0.14) 52%, rgba(255, 61, 141, 0.26) 76%, rgba(167, 25, 72, 0.3));
+  filter: blur(48px);
+  -webkit-mask-image: radial-gradient(ellipse 62% 56% at 49% 52%, #000 12%, rgba(0, 0, 0, 0.82) 48%, transparent 78%);
+  mask-image: radial-gradient(ellipse 62% 56% at 49% 52%, #000 12%, rgba(0, 0, 0, 0.82) 48%, transparent 78%);
   content: "";
+  transform: rotate(-5deg);
 }
 
-.hero-fruit-constellation,
-.hero-fruit-glow {
+.hero-fruit-constellation {
   position: absolute;
   top: 49%;
   left: 50%;
@@ -315,18 +259,11 @@ a {
 }
 
 .hero-fruit-constellation {
-  opacity: 0.78;
+  opacity: 0.82;
   filter: saturate(0.88) contrast(1.04) drop-shadow(0 24px 34px rgba(0, 0, 0, 0.5));
   -webkit-mask-image: radial-gradient(ellipse 68% 72% at 50% 52%, #000 36%, rgba(0, 0, 0, 0.84) 68%, transparent 100%);
   mask-image: radial-gradient(ellipse 68% 72% at 50% 52%, #000 36%, rgba(0, 0, 0, 0.84) 68%, transparent 100%);
   animation: hero-fruit-drift 8s ease-in-out infinite alternate;
-}
-
-.hero-fruit-glow {
-  opacity: 0.44;
-  filter: blur(32px) saturate(1.45);
-  transform: translate(-50%, -50%) scale(1.04) rotate(-5deg);
-  animation: hero-fruit-glow 6s ease-in-out infinite alternate;
 }
 
 @keyframes hero-fruit-reveal {
@@ -344,14 +281,6 @@ a {
 
 @keyframes hero-fruit-drift {
   to { transform: translate(-50%, calc(-50% - 14px)) rotate(-2deg); }
-}
-
-@keyframes hero-fruit-glow {
-  to {
-    opacity: 0.58;
-    filter: blur(40px) saturate(1.6);
-    transform: translate(-50%, calc(-50% - 8px)) scale(1.08) rotate(-2deg);
-  }
 }
 
 .hero-kicker {
@@ -1324,11 +1253,7 @@ noscript {
     align-self: flex-start;
   }
 
-  .hero-orbit-one { width: 100vw; }
-  .hero-orbit-two { width: 75vw; }
-
-  .hero-fruit-constellation,
-  .hero-fruit-glow {
+  .hero-fruit-constellation {
     top: 47%;
     width: min(88vw, 760px);
   }
@@ -1413,8 +1338,7 @@ noscript {
     line-height: 0.83;
   }
 
-  .hero-fruit-constellation,
-  .hero-fruit-glow {
+  .hero-fruit-constellation {
     top: clamp(95px, 16svh, 145px);
     width: 94vw;
   }
@@ -1425,9 +1349,10 @@ noscript {
     mask-image: radial-gradient(ellipse 64% 68% at 50% 52%, #000 28%, rgba(0, 0, 0, 0.76) 62%, transparent 100%);
   }
 
-  .hero-fruit-glow {
-    opacity: 0.3;
-    filter: blur(27px) saturate(1.35);
+  .hero-fruit-field::before {
+    inset: 2% -12% 34%;
+    opacity: 0.5;
+    filter: blur(34px);
   }
 
   .hero-product {
@@ -1438,7 +1363,7 @@ noscript {
   }
 
   .hero-can {
-    opacity: 0.36;
+    opacity: 0.42;
   }
 
   @keyframes hero-product-reveal {

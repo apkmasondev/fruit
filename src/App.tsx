@@ -142,16 +142,8 @@ function App() {
 
       <main>
         <section className="hero" id="top" aria-labelledby="hero-title">
-          <div className="hero-orbit hero-orbit-one" aria-hidden="true" />
-          <div className="hero-orbit hero-orbit-two" aria-hidden="true" />
           <HeroProductSilhouette />
           <div className="hero-fruit-field" aria-hidden="true">
-            <img
-              className="hero-fruit-glow"
-              src={HERO_FRUIT_CONSTELLATION}
-              alt=""
-              decoding="async"
-            />
             <img
               className="hero-fruit-constellation"
               src={HERO_FRUIT_CONSTELLATION}
