@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://apkmasondev.github.io/fruit/sitemap.xml
+Sitemap: https://apkmason.dev/fruit/sitemap.xml

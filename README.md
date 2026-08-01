@@ -19,7 +19,7 @@ npm run build
 
 ## Deployment
 
-The Vite base path is configured for `https://apkmasondev.github.io/fruit/`. A push to the `main` branch runs the GitHub Pages workflow in `.github/workflows/deploy-pages.yml`.
+The Vite base path is configured for `https://apkmason.dev/fruit/`. A push to the `main` branch runs the GitHub Pages workflow in `.github/workflows/deploy-pages.yml`.
 
 In the GitHub repository settings, select **GitHub Actions** as the Pages source before the first deployment.
 
