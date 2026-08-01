@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import LiquidDivider from './components/LiquidDivider'
 
 const VIDEO_ONE = `${import.meta.env.BASE_URL}video/01-hand-energy-reveal-gop1.mp4`
 const VIDEO_TWO = `${import.meta.env.BASE_URL}video/02-apkmason-beauty-shot-gop1.mp4`
@@ -260,6 +261,7 @@ function App() {
         </section>
 
         <section className="craft" aria-labelledby="craft-title">
+          <LiquidDivider />
           <div className="section-label section-label-dark">
             <span>002</span>
             <p>THE TASTE</p>
