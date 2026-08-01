@@ -201,19 +201,17 @@ a {
   transform: rotate(-5deg);
 }
 
-.hero-fruit-constellation {
+.hero-fruit-frame {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: min(108%, 900px);
+  width: min(96%, 720px, 66svh);
   height: auto;
-  opacity: 0.74;
+  opacity: 0.84;
   pointer-events: none;
   user-select: none;
-  filter: saturate(0.88) contrast(1.04) drop-shadow(0 24px 34px rgba(0, 0, 0, 0.5));
-  -webkit-mask-image: radial-gradient(ellipse 68% 72% at 50% 52%, #000 36%, rgba(0, 0, 0, 0.84) 68%, transparent 100%);
-  mask-image: radial-gradient(ellipse 68% 72% at 50% 52%, #000 36%, rgba(0, 0, 0, 0.84) 68%, transparent 100%);
-  transform: translate(-50%, -50%) rotate(-5deg);
+  filter: saturate(0.94) contrast(1.03) drop-shadow(0 24px 34px rgba(0, 0, 0, 0.5));
+  transform: translate(-50%, -50%);
   animation: hero-fruit-drift 8s ease-in-out infinite alternate;
 }
 
@@ -231,7 +229,7 @@ a {
 }
 
 @keyframes hero-fruit-drift {
-  to { transform: translate(-50%, calc(-50% - 14px)) rotate(-2deg); }
+  to { transform: translate(-50%, calc(-50% - 10px)); }
 }
 
 .hero-kicker {
@@ -1284,8 +1282,8 @@ noscript {
     font-size: min(clamp(4.4rem, 10.5vw, 6.4rem), 24svh);
   }
 
-  .hero-fruit-constellation {
-    width: min(114%, 680px);
+  .hero-fruit-frame {
+    width: min(96%, 620px, 60svh);
   }
 
   .hero-product {
@@ -1394,12 +1392,10 @@ noscript {
     line-height: 0.79;
   }
 
-  .hero-fruit-constellation {
+  .hero-fruit-frame {
     top: 50%;
-    width: min(114%, 500px);
-    opacity: 0.68;
-    -webkit-mask-image: radial-gradient(ellipse 64% 68% at 50% 52%, #000 28%, rgba(0, 0, 0, 0.76) 62%, transparent 100%);
-    mask-image: radial-gradient(ellipse 64% 68% at 50% 52%, #000 28%, rgba(0, 0, 0, 0.76) 62%, transparent 100%);
+    width: min(100%, 72vw, 400px);
+    opacity: 0.78;
   }
 
   .hero-fruit-field::before {

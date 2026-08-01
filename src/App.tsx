@@ -3,7 +3,7 @@ import LiquidDivider from './components/LiquidDivider'
 
 const VIDEO_ONE = `${import.meta.env.BASE_URL}video/01-hand-energy-reveal-gop1.mp4`
 const VIDEO_TWO = `${import.meta.env.BASE_URL}video/02-apkmason-beauty-shot-gop1.mp4`
-const HERO_FRUIT_CONSTELLATION = `${import.meta.env.BASE_URL}hero-fruit-constellation.png`
+const HERO_FRUIT_FRAME = `${import.meta.env.BASE_URL}hero-fruit-frame.webp`
 const HERO_PRODUCT = `${import.meta.env.BASE_URL}apkmason-can.webp`
 const FRUIT_ORBIT = `${import.meta.env.BASE_URL}fruit-orbit.png`
 
@@ -164,8 +164,8 @@ function App() {
               />
               <div className="hero-fruit-field">
                 <img
-                  className="hero-fruit-constellation"
-                  src={HERO_FRUIT_CONSTELLATION}
+                  className="hero-fruit-frame"
+                  src={HERO_FRUIT_FRAME}
                   alt=""
                   decoding="async"
                   fetchPriority="high"
