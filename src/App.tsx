@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import HeroProductSilhouette from './components/HeroProductSilhouette'
 import LiquidDivider from './components/LiquidDivider'
 
 const VIDEO_ONE = `${import.meta.env.BASE_URL}video/01-hand-energy-reveal-gop1.mp4`
@@ -143,6 +144,7 @@ function App() {
         <section className="hero" id="top" aria-labelledby="hero-title">
           <div className="hero-orbit hero-orbit-one" aria-hidden="true" />
           <div className="hero-orbit hero-orbit-two" aria-hidden="true" />
+          <HeroProductSilhouette />
           <div className="hero-fruit-field" aria-hidden="true">
             <img
               className="hero-fruit-glow"
@@ -164,7 +166,10 @@ function App() {
             <span>ENERGY</span>
           </h1>
           <div className="hero-footer">
-            <p>A current starts in the palm.<br />A new flavor takes shape.</p>
+            <div className="hero-flavor-lockup">
+              <strong>Ruby Mango</strong>
+              <span>05 fruit blend / lightly sparkling</span>
+            </div>
             <a href="#story" className="scroll-cue">
               <span>Scroll to release</span>
               <span className="scroll-line" aria-hidden="true" />
@@ -234,6 +239,7 @@ function App() {
         </section>
 
         <section className="concept" id="formula" aria-labelledby="concept-title">
+          <div className="concept-surface-bridge" aria-hidden="true" />
           <div className="section-label">
             <span>001</span>
             <p>THE FORMULA <b>SPECTRUM 01 / RUBY MANGO</b></p>
