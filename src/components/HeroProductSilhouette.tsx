@@ -11,7 +11,6 @@ export default function HeroProductSilhouette() {
       <div className="hero-can">
         <span className="hero-can__rim hero-can__rim--top" />
         <span className="hero-can__rim hero-can__rim--bottom" />
-        <span className="hero-can__identity">SPECTRUM<br />01</span>
         {droplets.map((drop) => <i key={drop.className} className={drop.className} />)}
       </div>
     </div>

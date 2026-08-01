@@ -241,7 +241,11 @@ function App() {
           <div className="concept-copy">
             <h2 id="concept-title">FROM RAW FRUIT<br />TO <em>RITUAL.</em></h2>
             <div className="concept-body">
-              <p className="lead">Ruby grapefruit meets ripe mango, dragon fruit, lime and red berry in one bright, lightly sparkling charge.</p>
+              <div className="concept-note-label">
+                <span>Tasting note</span>
+                <span>01—05</span>
+              </div>
+              <p className="lead">Ruby grapefruit meets ripe mango, dragon fruit, lime and red berry in one <em>bright, lightly sparkling charge.</em></p>
               <p>Crisp on the first sip, tropical through the middle and dry on the finish. APKMASON Fruit Energy is imagined with zero added sugar and 32 mg of caffeine per 100 ml. Best served ice cold.</p>
               <small>FICTIONAL PRODUCT SPECIFICATION</small>
             </div>
@@ -307,9 +311,16 @@ function App() {
       </main>
 
       <footer>
-        <a className="wordmark footer-wordmark" href="#top">APKMASON</a>
-        <p>SPECTRUM 01 / FICTIONAL BEVERAGE</p>
-        <p>© 2026</p>
+        <div className="footer-brand">
+          <a className="wordmark footer-wordmark" href="#top">APKMASON</a>
+          <p>SPECTRUM 01 / FICTIONAL BEVERAGE</p>
+        </div>
+        <a className="footer-contact" href="mailto:apkmason.dev@gmail.com" aria-label="Email APKMASON at apkmason.dev@gmail.com">
+          <span>Contact</span>
+          <strong>APKMASON.DEV@GMAIL.COM</strong>
+          <i aria-hidden="true">↗</i>
+        </a>
+        <p className="footer-year">© 2026</p>
       </footer>
     </>
   )
