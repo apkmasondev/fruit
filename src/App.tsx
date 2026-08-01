@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 
 const VIDEO_ONE = `${import.meta.env.BASE_URL}video/01-hand-energy-reveal-gop1.mp4`
 const VIDEO_TWO = `${import.meta.env.BASE_URL}video/02-apkmason-beauty-shot-gop1.mp4`
+const FRUIT_ORBIT = `${import.meta.env.BASE_URL}fruit-orbit.png`
 
 type Beat = {
   eyebrow: string
@@ -133,7 +134,7 @@ function App() {
           APK<span>/</span>MASON
         </a>
         <p>SPEC PRODUCT / 2026</p>
-        <p className="header-location">52.23° N / 21.01° E</p>
+        <p className="header-location">MOTION / INTERACTION</p>
       </header>
 
       <main>
@@ -261,6 +262,15 @@ function App() {
         </section>
 
         <section className="closing" aria-labelledby="closing-title">
+          <img
+            className="closing-fruit-orbit"
+            src={FRUIT_ORBIT}
+            alt=""
+            loading="lazy"
+            decoding="async"
+            fetchPriority="low"
+            aria-hidden="true"
+          />
           <p>ONE MORE SIP?</p>
           <h2 id="closing-title">TASTE<br />THE <span>FUTURE.</span></h2>
           <div className="closing-links">

@@ -670,6 +670,7 @@ a {
 
 .closing::after {
   position: absolute;
+  z-index: 0;
   right: -8vw;
   bottom: -22vw;
   width: 56vw;
@@ -680,7 +681,28 @@ a {
   pointer-events: none;
 }
 
+.closing-fruit-orbit {
+  position: absolute;
+  z-index: 1;
+  right: -8vw;
+  bottom: -7vh;
+  width: min(88vw, 1450px);
+  height: auto;
+  pointer-events: none;
+  user-select: none;
+  filter: drop-shadow(0 28px 38px rgba(72, 17, 0, 0.22));
+  transform: rotate(-4deg);
+  transform-origin: 66% 68%;
+  animation: fruit-orbit 7s ease-in-out infinite alternate;
+}
+
+@keyframes fruit-orbit {
+  to { transform: translate3d(0, -16px, 0) rotate(-2deg); }
+}
+
 .closing > p {
+  position: relative;
+  z-index: 3;
   margin: 0;
   font-size: 0.62rem;
   font-weight: 800;
@@ -689,7 +711,7 @@ a {
 
 .closing h2 {
   position: relative;
-  z-index: 1;
+  z-index: 3;
   margin-top: clamp(3rem, 5vw, 5rem);
   font-size: clamp(5.7rem, 16vw, 16rem);
   line-height: 0.74;
@@ -702,7 +724,7 @@ a {
 
 .closing-links {
   position: relative;
-  z-index: 2;
+  z-index: 4;
   display: flex;
   justify-content: space-between;
   margin-top: clamp(4rem, 8vw, 8rem);
@@ -927,6 +949,13 @@ noscript {
 
   .closing h2 {
     font-size: clamp(5rem, 23vw, 8rem);
+  }
+
+  .closing-fruit-orbit {
+    right: -48vw;
+    bottom: 16vh;
+    width: 155vw;
+    opacity: 0.96;
   }
 
   .closing-links {
