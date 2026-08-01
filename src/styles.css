@@ -152,7 +152,27 @@ a {
   transform: translate(-50%, -50%) rotate(22deg);
 }
 
+.hero-fruit-constellation {
+  position: absolute;
+  z-index: 0;
+  top: 49%;
+  left: 50%;
+  width: min(62vw, 1050px);
+  height: auto;
+  pointer-events: none;
+  user-select: none;
+  filter: drop-shadow(0 24px 34px rgba(0, 0, 0, 0.5));
+  transform: translate(-50%, -50%) rotate(-5deg);
+  animation: hero-fruit-drift 8s ease-in-out infinite alternate;
+}
+
+@keyframes hero-fruit-drift {
+  to { transform: translate(-50%, calc(-50% - 14px)) rotate(-2deg); }
+}
+
 .hero-kicker {
+  position: relative;
+  z-index: 2;
   margin: 0 0 1.5rem 0.4vw;
   font-size: clamp(0.65rem, 0.75vw, 0.82rem);
   font-weight: 700;
@@ -171,6 +191,8 @@ a {
 }
 
 .hero h1 {
+  position: relative;
+  z-index: 2;
   display: flex;
   width: 100%;
   flex-direction: column;
@@ -202,6 +224,8 @@ a {
 }
 
 .hero-footer {
+  position: relative;
+  z-index: 2;
   display: flex;
   align-items: end;
   justify-content: space-between;
@@ -546,6 +570,15 @@ a {
   letter-spacing: -0.02em;
 }
 
+.concept-body > small {
+  display: block;
+  margin-top: 2rem;
+  color: rgba(5, 5, 5, 0.42);
+  font-size: 0.52rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+}
+
 .concept-stats {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -571,10 +604,21 @@ a {
 }
 
 .concept-stats strong {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.35rem;
   font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
   font-size: clamp(4rem, 7.2vw, 7rem);
   font-weight: 900;
   line-height: 1;
+}
+
+.concept-stats strong small {
+  margin-top: 0.6em;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 0.13em;
+  font-weight: 900;
+  letter-spacing: 0.08em;
 }
 
 .concept-stats span {
@@ -814,6 +858,11 @@ noscript {
   .hero-orbit-one { width: 100vw; }
   .hero-orbit-two { width: 75vw; }
 
+  .hero-fruit-constellation {
+    top: 47%;
+    width: min(88vw, 760px);
+  }
+
   .stage-chrome {
     padding-right: 20px;
     padding-left: 20px;
@@ -870,6 +919,12 @@ noscript {
 
   .hero h1 {
     font-size: clamp(4.65rem, 23.8vw, 7.7rem);
+  }
+
+  .hero-fruit-constellation {
+    top: 43%;
+    width: 112vw;
+    opacity: 0.88;
   }
 
   .hero-footer {

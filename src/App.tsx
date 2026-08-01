@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 
 const VIDEO_ONE = `${import.meta.env.BASE_URL}video/01-hand-energy-reveal-gop1.mp4`
 const VIDEO_TWO = `${import.meta.env.BASE_URL}video/02-apkmason-beauty-shot-gop1.mp4`
+const HERO_FRUIT_CONSTELLATION = `${import.meta.env.BASE_URL}hero-fruit-constellation.png`
 const FRUIT_ORBIT = `${import.meta.env.BASE_URL}fruit-orbit.png`
 
 type Beat = {
@@ -127,20 +128,28 @@ function App() {
 
   return (
     <>
-      <a className="skip-link" href="#concept">Skip the cinematic experience</a>
+      <a className="skip-link" href="#formula">Skip to the formula</a>
 
       <header className="site-header" aria-label="Site header">
         <a className="wordmark" href="#top" aria-label="APKMASON — back to top">
           APK<span>/</span>MASON
         </a>
-        <p>SPEC PRODUCT / 2026</p>
-        <p className="header-location">MOTION / INTERACTION</p>
+        <p>330 ML / ENERGY DRINK</p>
+        <p className="header-location">MULTIFRUIT / 01</p>
       </header>
 
       <main>
         <section className="hero" id="top" aria-labelledby="hero-title">
           <div className="hero-orbit hero-orbit-one" aria-hidden="true" />
           <div className="hero-orbit hero-orbit-two" aria-hidden="true" />
+          <img
+            className="hero-fruit-constellation"
+            src={HERO_FRUIT_CONSTELLATION}
+            alt=""
+            decoding="async"
+            fetchPriority="high"
+            aria-hidden="true"
+          />
           <p className="hero-kicker">A fictional drink. A real current.</p>
           <h1 id="hero-title">
             <span>FRUIT</span>
@@ -191,7 +200,7 @@ function App() {
 
             <div className="stage-chrome stage-chrome-top" aria-hidden="true">
               <span ref={chapterRef}>01 / 04</span>
-              <span>SCROLL CONTROLS TIME</span>
+              <span>FLAVOR IN MOTION</span>
             </div>
 
             <div className="beats" aria-hidden="true">
@@ -210,55 +219,56 @@ function App() {
 
             <div className="stage-chrome stage-chrome-bottom" aria-hidden="true">
               <span>APKMASON® / MULTIFRUIT</span>
-              <span>NON-COMMERCIAL CONCEPT</span>
+              <span>330 ML / SERVE ICE COLD</span>
             </div>
             <div className="story-progress" aria-hidden="true"><div ref={progressRef} /></div>
           </div>
         </section>
 
-        <section className="concept" id="concept" aria-labelledby="concept-title">
+        <section className="concept" id="formula" aria-labelledby="concept-title">
           <div className="section-label">
             <span>001</span>
-            <p>THE CONCEPT</p>
+            <p>THE FORMULA</p>
           </div>
           <div className="concept-copy">
             <h2 id="concept-title">FROM RAW FRUIT<br />TO <em>RITUAL.</em></h2>
             <div className="concept-body">
-              <p className="lead">An imagined energy drink materialized from a single gesture — fruit, light and motion compressed into one electric object.</p>
-              <p>APKMASON Fruit Energy is a self-initiated product film and interactive web experiment. The scroll becomes the edit, giving every viewer control over the moment energy turns into form.</p>
+              <p className="lead">Ruby grapefruit meets ripe mango, dragon fruit, lime and red berry in one bright, lightly sparkling charge.</p>
+              <p>Crisp on the first sip, tropical through the middle and dry on the finish. APKMASON Fruit Energy is imagined with zero added sugar and 32 mg of caffeine per 100 ml. Best served ice cold.</p>
+              <small>FICTIONAL PRODUCT SPECIFICATION</small>
             </div>
           </div>
-          <div className="concept-stats" aria-label="Project facts">
-            <article><strong>02</strong><span>Cinematic films</span></article>
-            <article><strong>01</strong><span>Continuous gesture</span></article>
-            <article><strong>∞</strong><span>Flavor potential</span></article>
+          <div className="concept-stats" aria-label="Fictional drink facts">
+            <article><strong>330<small>ML</small></strong><span>Full-charge can</span></article>
+            <article><strong>05</strong><span>Fruit blend</span></article>
+            <article><strong>32<small>MG</small></strong><span>Caffeine / 100 ml</span></article>
           </div>
         </section>
 
         <section className="craft" aria-labelledby="craft-title">
           <div className="section-label section-label-dark">
             <span>002</span>
-            <p>THE CRAFT</p>
+            <p>THE TASTE</p>
           </div>
           <h2 id="craft-title">BUILT TO<br /><span>MOVE.</span></h2>
           <div className="craft-grid">
             <article>
               <span>01</span>
-              <h3>Direction</h3>
-              <p>A restrained black stage lets saturated fruit color become the identity.</p>
+              <h3>First note</h3>
+              <p>Ruby grapefruit lands bright and tart, sharpened by a clean twist of lime.</p>
             </article>
             <article>
               <span>02</span>
-              <h3>Motion</h3>
-              <p>Frame-accurate scroll control transforms two films into one continuous reveal.</p>
+              <h3>Heart</h3>
+              <p>Mango and dragon fruit bring a round tropical body with a vivid pink edge.</p>
             </article>
             <article>
               <span>03</span>
-              <h3>Development</h3>
-              <p>Native browser timing, progressive media loading and an accessible low-motion path.</p>
+              <h3>Finish</h3>
+              <p>Red berry cuts through the sweetness for a crisp, lightly sparkling finish.</p>
             </article>
           </div>
-          <p className="craft-note">CONCEPT / ART DIRECTION / MOTION / INTERACTION / DEVELOPMENT</p>
+          <p className="craft-note">RUBY GRAPEFRUIT / MANGO / DRAGON FRUIT / LIME / RED BERRY</p>
         </section>
 
         <section className="closing" aria-labelledby="closing-title">
@@ -274,15 +284,15 @@ function App() {
           <p>ONE MORE SIP?</p>
           <h2 id="closing-title">TASTE<br />THE <span>FUTURE.</span></h2>
           <div className="closing-links">
-            <a href="https://github.com/apkmasondev/fruit" target="_blank" rel="noreferrer">View source <span aria-hidden="true">↗</span></a>
-            <a href="#top">Replay story <span aria-hidden="true">↑</span></a>
+            <a href="#formula">Explore the blend <span aria-hidden="true">↑</span></a>
+            <a href="#top">Replay reveal <span aria-hidden="true">↑</span></a>
           </div>
         </section>
       </main>
 
       <footer>
         <a className="wordmark footer-wordmark" href="#top">APK<span>/</span>MASON</a>
-        <p>FICTIONAL PRODUCT / PORTFOLIO EXPERIMENT</p>
+        <p>FICTIONAL BEVERAGE / CONCEPT CAMPAIGN</p>
         <p>© 2026</p>
       </footer>
     </>
