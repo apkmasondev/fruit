@@ -135,7 +135,7 @@ function App() {
           APKMASON
         </a>
         <p>330 ML / ENERGY DRINK</p>
-        <p className="header-location">MULTIFRUIT / 01</p>
+        <p className="header-location">SPECTRUM / 01</p>
       </header>
 
       <main>
@@ -225,8 +225,8 @@ function App() {
             </div>
 
             <div className="stage-chrome stage-chrome-bottom" aria-hidden="true">
-              <span>APKMASON® / MULTIFRUIT</span>
-              <span>330 ML / SERVE ICE COLD</span>
+              <span>APKMASON® / SPECTRUM 01</span>
+              <span>RUBY MANGO / SERVE ICE COLD</span>
             </div>
             <div className="story-progress" aria-hidden="true"><div ref={progressRef} /></div>
           </div>
@@ -235,7 +235,7 @@ function App() {
         <section className="concept" id="formula" aria-labelledby="concept-title">
           <div className="section-label">
             <span>001</span>
-            <p>THE FORMULA</p>
+            <p>THE FORMULA <b>SPECTRUM 01 / RUBY MANGO</b></p>
           </div>
           <div className="concept-copy">
             <h2 id="concept-title">FROM RAW FRUIT<br />TO <em>RITUAL.</em></h2>
@@ -245,10 +245,17 @@ function App() {
               <small>FICTIONAL PRODUCT SPECIFICATION</small>
             </div>
           </div>
+          <ol className="flavor-spectrum" aria-label="Five-fruit flavor spectrum">
+            <li><span>01</span><strong>Ruby grapefruit</strong></li>
+            <li><span>02</span><strong>Ripe mango</strong></li>
+            <li><span>03</span><strong>Dragon fruit</strong></li>
+            <li><span>04</span><strong>Lime</strong></li>
+            <li><span>05</span><strong>Red berry</strong></li>
+          </ol>
           <div className="concept-stats" aria-label="Fictional drink facts">
-            <article><strong>330<small>ML</small></strong><span>Full-charge can</span></article>
-            <article><strong>05</strong><span>Fruit blend</span></article>
-            <article><strong>32<small>MG</small></strong><span>Caffeine / 100 ml</span></article>
+            <article><i className="stat-mark stat-mark-slice" aria-hidden="true" /><strong>330<small>ML</small></strong><span>Full-charge can</span></article>
+            <article><i className="stat-mark stat-mark-blend" aria-hidden="true" /><strong>05</strong><span>Fruit blend</span></article>
+            <article><i className="stat-mark stat-mark-seed" aria-hidden="true" /><strong>32<small>MG</small></strong><span>Caffeine / 100 ml</span></article>
           </div>
         </section>
 
@@ -299,7 +306,7 @@ function App() {
 
       <footer>
         <a className="wordmark footer-wordmark" href="#top">APKMASON</a>
-        <p>FICTIONAL BEVERAGE / CONCEPT CAMPAIGN</p>
+        <p>SPECTRUM 01 / FICTIONAL BEVERAGE</p>
         <p>© 2026</p>
       </footer>
     </>
