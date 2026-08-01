@@ -156,7 +156,7 @@ a {
   position: absolute;
   z-index: 0;
   top: 49%;
-  left: 52%;
+  left: 48%;
   width: min(clamp(156px, 14vw, 260px), 28svh);
   aspect-ratio: 0.47;
   pointer-events: none;
@@ -395,6 +395,7 @@ a {
 
 .hero h1 span:last-child {
   align-self: flex-end;
+  margin-right: clamp(12px, 1.25vw, 24px);
   color: transparent;
   background: linear-gradient(92deg, #ff3d8d 10%, #ff713b 39%, #dfff3f 72%, #8dff62 96%);
   background-size: 150% 100%;
@@ -1333,7 +1334,7 @@ noscript {
   }
 
   .hero-product {
-    left: 54%;
+    left: 50%;
     width: min(clamp(138px, 20vw, 190px), 30svh);
   }
 
@@ -1431,7 +1432,7 @@ noscript {
 
   .hero-product {
     top: clamp(94px, 16svh, 140px);
-    left: 55%;
+    left: 50%;
     width: min(clamp(104px, 29vw, 132px), 27svh);
     transform: translate(-50%, 0);
   }
