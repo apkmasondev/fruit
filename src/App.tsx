@@ -1,0 +1,282 @@
+import { useEffect, useRef, useState } from 'react'
+
+const VIDEO_ONE = `${import.meta.env.BASE_URL}video/01-hand-energy-reveal-gop1.mp4`
+const VIDEO_TWO = `${import.meta.env.BASE_URL}video/02-apkmason-beauty-shot-gop1.mp4`
+
+type Beat = {
+  eyebrow: string
+  lineOne: string
+  lineTwo: string
+  start: number
+  end: number
+  align: 'left' | 'right' | 'center'
+}
+
+const beats: Beat[] = [
+  { eyebrow: '01 / IGNITION', lineOne: 'RAW', lineTwo: 'ENERGY', start: 0.02, end: 0.24, align: 'left' },
+  { eyebrow: '02 / CURRENT', lineOne: 'SHAPED', lineTwo: 'BY COLOR', start: 0.22, end: 0.46, align: 'right' },
+  { eyebrow: '03 / FORM', lineOne: 'FLAVOR', lineTwo: 'TAKES FORM', start: 0.49, end: 0.72, align: 'left' },
+  { eyebrow: '04 / RELEASE', lineOne: 'FRUIT', lineTwo: 'ENERGY', start: 0.75, end: 0.99, align: 'center' },
+]
+
+const clamp = (value: number, min = 0, max = 1) => Math.min(max, Math.max(min, value))
+
+function beatVisibility(progress: number, start: number, end: number) {
+  const fade = Math.min(0.055, (end - start) * 0.28)
+  return clamp(Math.min((progress - start) / fade, (end - progress) / fade))
+}
+
+function App() {
+  const storyRef = useRef<HTMLElement>(null)
+  const stageRef = useRef<HTMLDivElement>(null)
+  const videoOneRef = useRef<HTMLVideoElement>(null)
+  const videoTwoRef = useRef<HTMLVideoElement>(null)
+  const beatRefs = useRef<Array<HTMLDivElement | null>>([])
+  const progressRef = useRef<HTMLDivElement>(null)
+  const chapterRef = useRef<HTMLSpanElement>(null)
+  const [metadataReady, setMetadataReady] = useState(0)
+  const [reducedMotion, setReducedMotion] = useState(false)
+
+  useEffect(() => {
+    const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const updateMotionPreference = () => setReducedMotion(motionQuery.matches)
+    updateMotionPreference()
+    motionQuery.addEventListener('change', updateMotionPreference)
+    return () => motionQuery.removeEventListener('change', updateMotionPreference)
+  }, [])
+
+  useEffect(() => {
+    const finalVideo = videoTwoRef.current
+    if (reducedMotion && finalVideo?.duration && Number.isFinite(finalVideo.duration)) {
+      finalVideo.currentTime = Math.max(finalVideo.duration * 0.92, 0.01)
+    }
+  }, [reducedMotion, metadataReady])
+
+  useEffect(() => {
+    if (reducedMotion) return
+
+    let frame = 0
+    let lastProgress = -1
+
+    const update = () => {
+      frame = 0
+      const story = storyRef.current
+      const stage = stageRef.current
+      if (!story || !stage) return
+
+      const rect = story.getBoundingClientRect()
+      const scrollableDistance = Math.max(story.offsetHeight - window.innerHeight, 1)
+      const progress = clamp(-rect.top / scrollableDistance)
+
+      if (Math.abs(progress - lastProgress) < 0.0001) return
+      lastProgress = progress
+      stage.style.setProperty('--story-progress', progress.toFixed(4))
+
+      const firstVideoProgress = clamp(progress / 0.51)
+      const secondVideoProgress = clamp((progress - 0.46) / 0.47)
+      const firstVideo = videoOneRef.current
+      const secondVideo = videoTwoRef.current
+
+      if (firstVideo?.duration && Number.isFinite(firstVideo.duration)) {
+        const targetTime = firstVideoProgress * Math.max(firstVideo.duration - 0.04, 0)
+        if (Math.abs(firstVideo.currentTime - targetTime) > 0.035) firstVideo.currentTime = targetTime
+      }
+
+      if (secondVideo?.duration && Number.isFinite(secondVideo.duration)) {
+        const targetTime = secondVideoProgress * Math.max(secondVideo.duration - 0.04, 0)
+        if (Math.abs(secondVideo.currentTime - targetTime) > 0.035) secondVideo.currentTime = targetTime
+      }
+
+      const crossfade = clamp((progress - 0.455) / 0.1)
+      if (firstVideo) firstVideo.style.opacity = String(1 - crossfade)
+      if (secondVideo) secondVideo.style.opacity = String(crossfade)
+
+      beatRefs.current.forEach((beat, index) => {
+        if (!beat) return
+        const visibility = beatVisibility(progress, beats[index].start, beats[index].end)
+        beat.style.opacity = visibility.toFixed(3)
+        beat.style.setProperty('--beat-y', `${(1 - visibility) * 26}px`)
+        beat.style.filter = `blur(${(1 - visibility) * 8}px)`
+        beat.style.pointerEvents = visibility > 0.5 ? 'auto' : 'none'
+      })
+
+      if (progressRef.current) progressRef.current.style.transform = `scaleX(${progress})`
+      if (chapterRef.current) chapterRef.current.textContent = `${String(Math.min(4, Math.floor(progress * 4) + 1)).padStart(2, '0')} / 04`
+    }
+
+    const requestUpdate = () => {
+      if (!frame) frame = window.requestAnimationFrame(update)
+    }
+
+    update()
+    window.addEventListener('scroll', requestUpdate, { passive: true })
+    window.addEventListener('resize', requestUpdate)
+    return () => {
+      window.removeEventListener('scroll', requestUpdate)
+      window.removeEventListener('resize', requestUpdate)
+      if (frame) window.cancelAnimationFrame(frame)
+    }
+  }, [reducedMotion, metadataReady])
+
+  const handleMetadata = (event: React.SyntheticEvent<HTMLVideoElement>, finalFrame = false) => {
+    const video = event.currentTarget
+    video.currentTime = reducedMotion && finalFrame ? Math.max(video.duration * 0.92, 0.01) : 0.01
+    setMetadataReady((count) => count + 1)
+  }
+
+  return (
+    <>
+      <a className="skip-link" href="#concept">Skip the cinematic experience</a>
+
+      <header className="site-header" aria-label="Site header">
+        <a className="wordmark" href="#top" aria-label="APKMASON — back to top">
+          APK<span>/</span>MASON
+        </a>
+        <p>SPEC PRODUCT / 2026</p>
+        <p className="header-location">52.23° N / 21.01° E</p>
+      </header>
+
+      <main>
+        <section className="hero" id="top" aria-labelledby="hero-title">
+          <div className="hero-orbit hero-orbit-one" aria-hidden="true" />
+          <div className="hero-orbit hero-orbit-two" aria-hidden="true" />
+          <p className="hero-kicker">A fictional drink. A real current.</p>
+          <h1 id="hero-title">
+            <span>FRUIT</span>
+            <span>ENERGY</span>
+          </h1>
+          <div className="hero-footer">
+            <p>A current starts in the palm.<br />A new flavor takes shape.</p>
+            <a href="#story" className="scroll-cue">
+              <span>Scroll to release</span>
+              <span className="scroll-line" aria-hidden="true" />
+            </a>
+          </div>
+        </section>
+
+        <section className={`story${reducedMotion ? ' is-reduced' : ''}`} id="story" ref={storyRef} aria-label="Fruit Energy product reveal">
+          <div className="stage" ref={stageRef}>
+            <div className="stage-glow" aria-hidden="true" />
+            <div className={`film-loading${metadataReady >= 2 ? ' is-ready' : ''}`} aria-hidden="true">
+              <span />
+              <p>CHARGING COLOR</p>
+            </div>
+
+            <video
+              ref={videoOneRef}
+              className="story-video story-video-one"
+              src={VIDEO_ONE}
+              preload="metadata"
+              muted
+              playsInline
+              tabIndex={-1}
+              aria-hidden="true"
+              onLoadedMetadata={(event) => handleMetadata(event)}
+            />
+            <video
+              ref={videoTwoRef}
+              className="story-video story-video-two"
+              src={VIDEO_TWO}
+              preload="metadata"
+              muted
+              playsInline
+              tabIndex={-1}
+              aria-hidden="true"
+              onLoadedMetadata={(event) => handleMetadata(event, true)}
+            />
+
+            <div className="stage-vignette" aria-hidden="true" />
+            <div className="stage-grain" aria-hidden="true" />
+
+            <div className="stage-chrome stage-chrome-top" aria-hidden="true">
+              <span ref={chapterRef}>01 / 04</span>
+              <span>SCROLL CONTROLS TIME</span>
+            </div>
+
+            <div className="beats" aria-hidden="true">
+              {beats.map((beat, index) => (
+                <div
+                  className={`beat beat-${beat.align}`}
+                  key={beat.eyebrow}
+                  ref={(element) => { beatRefs.current[index] = element }}
+                >
+                  <p>{beat.eyebrow}</p>
+                  <h2><span>{beat.lineOne}</span><span>{beat.lineTwo}</span></h2>
+                  {index === beats.length - 1 && <small>CHARGED BY NATURE. DIRECTED BY COLOR.</small>}
+                </div>
+              ))}
+            </div>
+
+            <div className="stage-chrome stage-chrome-bottom" aria-hidden="true">
+              <span>APKMASON® / MULTIFRUIT</span>
+              <span>NON-COMMERCIAL CONCEPT</span>
+            </div>
+            <div className="story-progress" aria-hidden="true"><div ref={progressRef} /></div>
+          </div>
+        </section>
+
+        <section className="concept" id="concept" aria-labelledby="concept-title">
+          <div className="section-label">
+            <span>001</span>
+            <p>THE CONCEPT</p>
+          </div>
+          <div className="concept-copy">
+            <h2 id="concept-title">FROM RAW FRUIT<br />TO <em>RITUAL.</em></h2>
+            <div className="concept-body">
+              <p className="lead">An imagined energy drink materialized from a single gesture — fruit, light and motion compressed into one electric object.</p>
+              <p>APKMASON Fruit Energy is a self-initiated product film and interactive web experiment. The scroll becomes the edit, giving every viewer control over the moment energy turns into form.</p>
+            </div>
+          </div>
+          <div className="concept-stats" aria-label="Project facts">
+            <article><strong>02</strong><span>Cinematic films</span></article>
+            <article><strong>01</strong><span>Continuous gesture</span></article>
+            <article><strong>∞</strong><span>Flavor potential</span></article>
+          </div>
+        </section>
+
+        <section className="craft" aria-labelledby="craft-title">
+          <div className="section-label section-label-dark">
+            <span>002</span>
+            <p>THE CRAFT</p>
+          </div>
+          <h2 id="craft-title">BUILT TO<br /><span>MOVE.</span></h2>
+          <div className="craft-grid">
+            <article>
+              <span>01</span>
+              <h3>Direction</h3>
+              <p>A restrained black stage lets saturated fruit color become the identity.</p>
+            </article>
+            <article>
+              <span>02</span>
+              <h3>Motion</h3>
+              <p>Frame-accurate scroll control transforms two films into one continuous reveal.</p>
+            </article>
+            <article>
+              <span>03</span>
+              <h3>Development</h3>
+              <p>Native browser timing, progressive media loading and an accessible low-motion path.</p>
+            </article>
+          </div>
+          <p className="craft-note">CONCEPT / ART DIRECTION / MOTION / INTERACTION / DEVELOPMENT</p>
+        </section>
+
+        <section className="closing" aria-labelledby="closing-title">
+          <p>ONE MORE SIP?</p>
+          <h2 id="closing-title">TASTE<br />THE <span>FUTURE.</span></h2>
+          <div className="closing-links">
+            <a href="https://github.com/apkmasondev/fruit" target="_blank" rel="noreferrer">View source <span aria-hidden="true">↗</span></a>
+            <a href="#top">Replay story <span aria-hidden="true">↑</span></a>
+          </div>
+        </section>
+      </main>
+
+      <footer>
+        <a className="wordmark footer-wordmark" href="#top">APK<span>/</span>MASON</a>
+        <p>FICTIONAL PRODUCT / PORTFOLIO EXPERIMENT</p>
+        <p>© 2026</p>
+      </footer>
+    </>
+  )
+}
+
+export default App
