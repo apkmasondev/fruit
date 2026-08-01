@@ -132,7 +132,7 @@ function App() {
 
       <header className="site-header" aria-label="Site header">
         <a className="wordmark" href="#top" aria-label="APKMASON — back to top">
-          APK<span>/</span>MASON
+          APKMASON
         </a>
         <p>330 ML / ENERGY DRINK</p>
         <p className="header-location">MULTIFRUIT / 01</p>
@@ -142,14 +142,21 @@ function App() {
         <section className="hero" id="top" aria-labelledby="hero-title">
           <div className="hero-orbit hero-orbit-one" aria-hidden="true" />
           <div className="hero-orbit hero-orbit-two" aria-hidden="true" />
-          <img
-            className="hero-fruit-constellation"
-            src={HERO_FRUIT_CONSTELLATION}
-            alt=""
-            decoding="async"
-            fetchPriority="high"
-            aria-hidden="true"
-          />
+          <div className="hero-fruit-field" aria-hidden="true">
+            <img
+              className="hero-fruit-glow"
+              src={HERO_FRUIT_CONSTELLATION}
+              alt=""
+              decoding="async"
+            />
+            <img
+              className="hero-fruit-constellation"
+              src={HERO_FRUIT_CONSTELLATION}
+              alt=""
+              decoding="async"
+              fetchPriority="high"
+            />
+          </div>
           <p className="hero-kicker">A fictional drink. A real current.</p>
           <h1 id="hero-title">
             <span>FRUIT</span>
@@ -291,7 +298,7 @@ function App() {
       </main>
 
       <footer>
-        <a className="wordmark footer-wordmark" href="#top">APK<span>/</span>MASON</a>
+        <a className="wordmark footer-wordmark" href="#top">APKMASON</a>
         <p>FICTIONAL BEVERAGE / CONCEPT CAMPAIGN</p>
         <p>© 2026</p>
       </footer>

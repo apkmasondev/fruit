@@ -102,10 +102,6 @@ a {
   letter-spacing: -0.045em;
 }
 
-.wordmark span {
-  color: var(--pink);
-}
-
 .hero {
   position: relative;
   display: flex;
@@ -152,22 +148,76 @@ a {
   transform: translate(-50%, -50%) rotate(22deg);
 }
 
-.hero-fruit-constellation {
+.hero-fruit-field {
   position: absolute;
   z-index: 0;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  animation: hero-fruit-reveal 1.8s cubic-bezier(0.16, 1, 0.3, 1) 180ms both;
+}
+
+.hero-fruit-field::before {
+  position: absolute;
+  inset: 15% 12%;
+  opacity: 0.52;
+  background:
+    radial-gradient(circle at 40% 57%, rgba(255, 70, 99, 0.2), transparent 23%),
+    radial-gradient(circle at 61% 42%, rgba(223, 255, 63, 0.17), transparent 22%);
+  filter: blur(34px);
+  content: "";
+}
+
+.hero-fruit-constellation,
+.hero-fruit-glow {
+  position: absolute;
   top: 49%;
   left: 50%;
   width: min(62vw, 1050px);
   height: auto;
   pointer-events: none;
   user-select: none;
-  filter: drop-shadow(0 24px 34px rgba(0, 0, 0, 0.5));
   transform: translate(-50%, -50%) rotate(-5deg);
+}
+
+.hero-fruit-constellation {
+  opacity: 0.78;
+  filter: saturate(0.88) contrast(1.04) drop-shadow(0 24px 34px rgba(0, 0, 0, 0.5));
+  -webkit-mask-image: radial-gradient(ellipse 68% 72% at 50% 52%, #000 36%, rgba(0, 0, 0, 0.84) 68%, transparent 100%);
+  mask-image: radial-gradient(ellipse 68% 72% at 50% 52%, #000 36%, rgba(0, 0, 0, 0.84) 68%, transparent 100%);
   animation: hero-fruit-drift 8s ease-in-out infinite alternate;
+}
+
+.hero-fruit-glow {
+  opacity: 0.44;
+  filter: blur(32px) saturate(1.45);
+  transform: translate(-50%, -50%) scale(1.04) rotate(-5deg);
+  animation: hero-fruit-glow 6s ease-in-out infinite alternate;
+}
+
+@keyframes hero-fruit-reveal {
+  from {
+    opacity: 0;
+    filter: blur(22px);
+    transform: scale(0.94);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: scale(1);
+  }
 }
 
 @keyframes hero-fruit-drift {
   to { transform: translate(-50%, calc(-50% - 14px)) rotate(-2deg); }
+}
+
+@keyframes hero-fruit-glow {
+  to {
+    opacity: 0.58;
+    filter: blur(40px) saturate(1.6);
+    transform: translate(-50%, calc(-50% - 8px)) scale(1.08) rotate(-2deg);
+  }
 }
 
 .hero-kicker {
@@ -858,7 +908,8 @@ noscript {
   .hero-orbit-one { width: 100vw; }
   .hero-orbit-two { width: 75vw; }
 
-  .hero-fruit-constellation {
+  .hero-fruit-constellation,
+  .hero-fruit-glow {
     top: 47%;
     width: min(88vw, 760px);
   }
@@ -921,9 +972,13 @@ noscript {
     font-size: clamp(4.65rem, 23.8vw, 7.7rem);
   }
 
-  .hero-fruit-constellation {
+  .hero-fruit-constellation,
+  .hero-fruit-glow {
     top: 43%;
     width: 112vw;
+  }
+
+  .hero-fruit-constellation {
     opacity: 0.88;
   }
 
