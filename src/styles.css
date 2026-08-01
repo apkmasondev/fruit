@@ -125,6 +125,14 @@ a {
   content: "";
 }
 
+.hero-content {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 1920px;
+  margin-inline: auto;
+}
+
 .hero-product {
   position: absolute;
   z-index: 0;
@@ -253,16 +261,13 @@ a {
   left: 50%;
   width: min(62vw, 1050px);
   height: auto;
+  opacity: 0.82;
   pointer-events: none;
   user-select: none;
-  transform: translate(-50%, -50%) rotate(-5deg);
-}
-
-.hero-fruit-constellation {
-  opacity: 0.82;
   filter: saturate(0.88) contrast(1.04) drop-shadow(0 24px 34px rgba(0, 0, 0, 0.5));
   -webkit-mask-image: radial-gradient(ellipse 68% 72% at 50% 52%, #000 36%, rgba(0, 0, 0, 0.84) 68%, transparent 100%);
   mask-image: radial-gradient(ellipse 68% 72% at 50% 52%, #000 36%, rgba(0, 0, 0, 0.84) 68%, transparent 100%);
+  transform: translate(-50%, -50%) rotate(-5deg);
   animation: hero-fruit-drift 8s ease-in-out infinite alternate;
 }
 
@@ -285,7 +290,6 @@ a {
 
 .hero-kicker {
   position: relative;
-  z-index: 2;
   margin: 0 0 1.5rem 0.4vw;
   font-size: clamp(0.65rem, 0.75vw, 0.82rem);
   font-weight: 700;
@@ -305,11 +309,10 @@ a {
 
 .hero h1 {
   position: relative;
-  z-index: 2;
   display: flex;
   width: 100%;
   flex-direction: column;
-  font-size: clamp(5.6rem, 17vw, 17rem);
+  font-size: min(clamp(5.6rem, 17vw, 17rem), 32svh);
   line-height: 0.72;
   letter-spacing: -0.055em;
 }
@@ -339,7 +342,6 @@ a {
 
 .hero-footer {
   position: relative;
-  z-index: 2;
   display: flex;
   align-items: end;
   justify-content: space-between;
@@ -396,6 +398,38 @@ a {
 @keyframes scroll-line {
   0% { transform: translateX(-100%); }
   60%, 100% { transform: translateX(100%); }
+}
+
+@media (min-width: 1180px) and (min-height: 680px) {
+  .hero h1 {
+    align-items: center;
+    justify-content: space-between;
+    flex-direction: row;
+    font-size: min(clamp(6rem, 10.5vw, 13rem), 26svh);
+    line-height: 0.78;
+  }
+
+  .hero h1 span:last-child {
+    align-self: auto;
+  }
+
+  .hero-product {
+    top: 50%;
+    width: min(clamp(165px, 13.5vw, 260px), 27svh);
+  }
+
+  .hero-fruit-constellation {
+    top: 50%;
+    width: min(58vw, 980px);
+  }
+
+  .hero-kicker {
+    margin-bottom: clamp(1.5rem, 2.4vh, 2.25rem);
+  }
+
+  .hero-footer {
+    margin-top: clamp(2.5rem, 4.5vh, 4.5rem);
+  }
 }
 
 .story {
@@ -1245,7 +1279,7 @@ noscript {
   }
 
   .hero h1 {
-    font-size: clamp(5rem, 22vw, 10rem);
+    font-size: min(clamp(5rem, 22vw, 10rem), 28svh);
     line-height: 0.79;
   }
 
@@ -1334,7 +1368,7 @@ noscript {
   }
 
   .hero h1 {
-    font-size: clamp(4rem, 21.5vw, 6.8rem);
+    font-size: min(clamp(4rem, 21.5vw, 6.8rem), 22svh);
     line-height: 0.83;
   }
 

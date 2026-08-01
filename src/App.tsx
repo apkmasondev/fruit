@@ -152,20 +152,22 @@ function App() {
               fetchPriority="high"
             />
           </div>
-          <p className="hero-kicker">A fictional drink. A real current.</p>
-          <h1 id="hero-title">
-            <span>FRUIT</span>
-            <span>ENERGY</span>
-          </h1>
-          <div className="hero-footer">
-            <div className="hero-flavor-lockup">
-              <strong>Ruby Mango</strong>
-              <span>05 fruit blend / lightly sparkling</span>
+          <div className="hero-content">
+            <p className="hero-kicker">A fictional drink. A real current.</p>
+            <h1 id="hero-title">
+              <span>FRUIT</span>
+              <span>ENERGY</span>
+            </h1>
+            <div className="hero-footer">
+              <div className="hero-flavor-lockup">
+                <strong>Ruby Mango</strong>
+                <span>05 fruit blend / lightly sparkling</span>
+              </div>
+              <a href="#story" className="scroll-cue">
+                <span>Scroll to release</span>
+                <span className="scroll-line" aria-hidden="true" />
+              </a>
             </div>
-            <a href="#story" className="scroll-cue">
-              <span>Scroll to release</span>
-              <span className="scroll-line" aria-hidden="true" />
-            </a>
           </div>
         </section>
 
