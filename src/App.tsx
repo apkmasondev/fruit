@@ -4,7 +4,7 @@ import LiquidDivider from './components/LiquidDivider'
 const VIDEO_ONE = `${import.meta.env.BASE_URL}video/01-hand-energy-reveal-gop1.mp4`
 const VIDEO_TWO = `${import.meta.env.BASE_URL}video/02-apkmason-beauty-shot-gop1.mp4`
 const HERO_FRUIT_CONSTELLATION = `${import.meta.env.BASE_URL}hero-fruit-constellation.png`
-const HERO_PRODUCT = `${import.meta.env.BASE_URL}apkmason-can.png`
+const HERO_PRODUCT = `${import.meta.env.BASE_URL}apkmason-can.webp`
 const FRUIT_ORBIT = `${import.meta.env.BASE_URL}fruit-orbit.png`
 
 type Beat = {

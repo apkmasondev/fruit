@@ -153,10 +153,10 @@ a {
 
 .hero-product {
   position: absolute;
-  z-index: 2;
+  z-index: 3;
   top: 50%;
   left: 50%;
-  width: min(clamp(180px, 17vw, 300px), 31svh);
+  width: min(clamp(176px, 16vw, 280px), 30svh);
   height: auto;
   object-fit: contain;
   pointer-events: none;
@@ -182,7 +182,7 @@ a {
 
 .hero-fruit-field {
   position: absolute;
-  z-index: 3;
+  z-index: 1;
   inset: 0;
   overflow: hidden;
   pointer-events: none;
@@ -205,9 +205,9 @@ a {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: min(118%, 980px);
+  width: min(108%, 900px);
   height: auto;
-  opacity: 0.82;
+  opacity: 0.74;
   pointer-events: none;
   user-select: none;
   filter: saturate(0.88) contrast(1.04) drop-shadow(0 24px 34px rgba(0, 0, 0, 0.5));
@@ -273,11 +273,13 @@ a {
 
 .hero h1 span:last-child {
   align-self: flex-start;
+  padding-right: 0.075em;
   color: transparent;
   background: linear-gradient(92deg, #ff3d8d 10%, #ff713b 39%, #dfff3f 72%, #8dff62 96%);
   background-size: 150% 100%;
   background-clip: text;
   -webkit-background-clip: text;
+  letter-spacing: -0.042em;
   animation: gradient-drift 8s ease-in-out infinite alternate;
 }
 
@@ -1283,11 +1285,11 @@ noscript {
   }
 
   .hero-fruit-constellation {
-    width: min(124%, 720px);
+    width: min(114%, 680px);
   }
 
   .hero-product {
-    width: min(clamp(150px, 19vw, 195px), 30svh);
+    width: min(clamp(148px, 18vw, 190px), 29svh);
   }
 
   .stage-chrome {
@@ -1394,8 +1396,8 @@ noscript {
 
   .hero-fruit-constellation {
     top: 50%;
-    width: min(122%, 540px);
-    opacity: 0.74;
+    width: min(114%, 500px);
+    opacity: 0.68;
     -webkit-mask-image: radial-gradient(ellipse 64% 68% at 50% 52%, #000 28%, rgba(0, 0, 0, 0.76) 62%, transparent 100%);
     mask-image: radial-gradient(ellipse 64% 68% at 50% 52%, #000 28%, rgba(0, 0, 0, 0.76) 62%, transparent 100%);
   }
@@ -1409,7 +1411,7 @@ noscript {
   .hero-product {
     top: 50%;
     left: 50%;
-    width: min(clamp(128px, 34vw, 174px), 34svh);
+    width: min(clamp(126px, 32vw, 168px), 33svh);
   }
 
   .hero-scroll {
