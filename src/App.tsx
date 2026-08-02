@@ -1,11 +1,17 @@
 import { useEffect, useRef, useState } from 'react'
 import LiquidDivider from './components/LiquidDivider'
 
-const VIDEO_ONE = `${import.meta.env.BASE_URL}video/01-hand-energy-reveal-gop1.mp4`
-const VIDEO_TWO = `${import.meta.env.BASE_URL}video/02-apkmason-beauty-shot-gop1.mp4`
+const VIDEO_ONE_DESKTOP = `${import.meta.env.BASE_URL}video/01-hand-energy-reveal-gop1.mp4`
+const VIDEO_TWO_DESKTOP = `${import.meta.env.BASE_URL}video/02-apkmason-beauty-shot-gop1.mp4`
+const VIDEO_ONE_MOBILE = `${import.meta.env.BASE_URL}video/01-hand-energy-reveal-mobile-gop2.mp4`
+const VIDEO_TWO_MOBILE = `${import.meta.env.BASE_URL}video/02-apkmason-beauty-shot-mobile-gop2.mp4`
 const HERO_FRUIT_FRAME = `${import.meta.env.BASE_URL}hero-fruit-frame.webp`
 const HERO_PRODUCT = `${import.meta.env.BASE_URL}apkmason-can.webp`
 const FRUIT_ORBIT = `${import.meta.env.BASE_URL}fruit-orbit.png`
+const MOBILE_MEDIA_QUERY = '(max-width: 720px)'
+const MOBILE_SEEK_FRAME_RATE = 24
+const DESKTOP_SEEK_THRESHOLD = 0.035
+const MOBILE_SEEK_THRESHOLD = 1 / MOBILE_SEEK_FRAME_RATE - 0.002
 
 type Beat = {
   eyebrow: string
@@ -28,6 +34,19 @@ const clamp = (value: number, min = 0, max = 1) => Math.min(max, Math.max(min, v
 function beatVisibility(progress: number, start: number, end: number) {
   const fade = Math.min(0.055, (end - start) * 0.28)
   return clamp(Math.min((progress - start) / fade, (end - progress) / fade))
+}
+
+function seekVideoFrame(video: HTMLVideoElement | null, progress: number, useMobileCadence: boolean) {
+  if (!video?.duration || !Number.isFinite(video.duration)) return
+
+  const maxTime = Math.max(video.duration - 0.04, 0)
+  const rawTargetTime = progress * maxTime
+  const targetTime = useMobileCadence
+    ? Math.min(maxTime, Math.round(rawTargetTime * MOBILE_SEEK_FRAME_RATE) / MOBILE_SEEK_FRAME_RATE)
+    : rawTargetTime
+  const threshold = useMobileCadence ? MOBILE_SEEK_THRESHOLD : DESKTOP_SEEK_THRESHOLD
+
+  if (Math.abs(video.currentTime - targetTime) > threshold) video.currentTime = targetTime
 }
 
 function App() {
@@ -61,6 +80,7 @@ function App() {
 
     let frame = 0
     let lastProgress = -1
+    const compactViewport = window.matchMedia(MOBILE_MEDIA_QUERY)
 
     const update = () => {
       frame = 0
@@ -80,16 +100,10 @@ function App() {
       const secondVideoProgress = clamp((progress - 0.46) / 0.47)
       const firstVideo = videoOneRef.current
       const secondVideo = videoTwoRef.current
+      const useMobileCadence = compactViewport.matches
 
-      if (firstVideo?.duration && Number.isFinite(firstVideo.duration)) {
-        const targetTime = firstVideoProgress * Math.max(firstVideo.duration - 0.04, 0)
-        if (Math.abs(firstVideo.currentTime - targetTime) > 0.035) firstVideo.currentTime = targetTime
-      }
-
-      if (secondVideo?.duration && Number.isFinite(secondVideo.duration)) {
-        const targetTime = secondVideoProgress * Math.max(secondVideo.duration - 0.04, 0)
-        if (Math.abs(secondVideo.currentTime - targetTime) > 0.035) secondVideo.currentTime = targetTime
-      }
+      seekVideoFrame(firstVideo, firstVideoProgress, useMobileCadence)
+      seekVideoFrame(secondVideo, secondVideoProgress, useMobileCadence)
 
       const crossfade = clamp((progress - 0.455) / 0.1)
       if (firstVideo) firstVideo.style.opacity = String(1 - crossfade)
@@ -190,25 +204,29 @@ function App() {
             <video
               ref={videoOneRef}
               className="story-video story-video-one"
-              src={VIDEO_ONE}
               preload="metadata"
               muted
               playsInline
               tabIndex={-1}
               aria-hidden="true"
               onLoadedMetadata={(event) => handleMetadata(event)}
-            />
+            >
+              <source src={VIDEO_ONE_MOBILE} type="video/mp4" media={MOBILE_MEDIA_QUERY} />
+              <source src={VIDEO_ONE_DESKTOP} type="video/mp4" />
+            </video>
             <video
               ref={videoTwoRef}
               className="story-video story-video-two"
-              src={VIDEO_TWO}
               preload="metadata"
               muted
               playsInline
               tabIndex={-1}
               aria-hidden="true"
               onLoadedMetadata={(event) => handleMetadata(event, true)}
-            />
+            >
+              <source src={VIDEO_TWO_MOBILE} type="video/mp4" media={MOBILE_MEDIA_QUERY} />
+              <source src={VIDEO_TWO_DESKTOP} type="video/mp4" />
+            </video>
 
             <div className="stage-vignette" aria-hidden="true" />
             <div className="stage-grain" aria-hidden="true" />
