@@ -5,3 +5,6 @@ dist/
 *.log
 .vite/
 *.tsbuildinfo
+PLAN.md
+plan.md
+
