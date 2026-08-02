@@ -3,8 +3,8 @@ import LiquidDivider from './components/LiquidDivider'
 
 const VIDEO_ONE_DESKTOP = `${import.meta.env.BASE_URL}video/01-hand-energy-reveal-gop1.mp4`
 const VIDEO_TWO_DESKTOP = `${import.meta.env.BASE_URL}video/02-apkmason-beauty-shot-gop1.mp4`
-const VIDEO_ONE_MOBILE = `${import.meta.env.BASE_URL}video/01-hand-energy-reveal-mobile-gop2.mp4`
-const VIDEO_TWO_MOBILE = `${import.meta.env.BASE_URL}video/02-apkmason-beauty-shot-mobile-gop2.mp4`
+const VIDEO_ONE_MOBILE = `${import.meta.env.BASE_URL}video/01-hand-energy-reveal-mobile-gop1.mp4`
+const VIDEO_TWO_MOBILE = `${import.meta.env.BASE_URL}video/02-apkmason-beauty-shot-mobile-gop1.mp4`
 const HERO_FRUIT_FRAME = `${import.meta.env.BASE_URL}hero-fruit-frame.webp`
 const HERO_PRODUCT = `${import.meta.env.BASE_URL}apkmason-can.webp`
 const FRUIT_ORBIT = `${import.meta.env.BASE_URL}fruit-orbit.png`
