@@ -4,6 +4,8 @@
   background: #050505;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
+
+  /* Palette — citrus spectrum */
   --ink: #050505;
   --paper: #f4ecdc;
   --paper-deep: #eadfca;
@@ -12,9 +14,43 @@
   --formula-edge-end: #eadfca;
   --acid: #dfff3f;
   --pink: #ff3d8d;
+  --ruby: #ff3d6e;
   --orange: #ff713b;
+  --mango: #ff8a32;
+  --sun: #ffd839;
   --lime: #8dff62;
+  --leaf: #b9d819;
+  --berry: #a71948;
   --line: rgba(255, 255, 255, 0.18);
+  --citrus-sweep: linear-gradient(90deg, var(--ruby), var(--mango) 32%, var(--sun) 55%, var(--leaf) 78%, var(--lime));
+
+  /* Type */
+  --font-display: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+
+  /* Spacing scale */
+  --space-2: 8px;
+  --space-3: 14px;
+  --space-4: 20px;
+  --space-5: 34px;
+
+  /* Radii */
+  --radius-pill: 999px;
+  --radius-round: 50%;
+
+  /* Elevation — the art direction casts shadows off cut-out artwork, so the scale
+     is expressed as drop-shadow() functions rather than box-shadows. */
+  --drop-lift: drop-shadow(0 36px 44px rgba(0, 0, 0, 0.6));
+  --drop-mid: drop-shadow(0 24px 34px rgba(0, 0, 0, 0.5));
+  --drop-warm: drop-shadow(0 28px 38px rgba(72, 17, 0, 0.22));
+  --drop-rim: drop-shadow(0 8px 10px rgba(255, 61, 141, 0.1));
+  --glow-acid: 0 0 30px -10px rgba(223, 255, 63, 0.5);
+
+  /* Motion */
+  --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.4, 0.5, 1);
+  --dur-fast: 160ms;
+  --dur-mid: 320ms;
+  --dur-slow: 620ms;
 }
 
 * {
@@ -29,8 +65,11 @@ html {
 body {
   margin: 0;
   min-width: 320px;
-  overflow-x: hidden;
   background: var(--ink);
+  /* `clip` keeps the horizontal overflow contained without turning <body> into a
+     scroll container — `hidden` does, and that is what breaks position:sticky on iOS Safari. */
+  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 body,
@@ -40,11 +79,20 @@ a {
 
 a {
   text-decoration: none;
+  touch-action: manipulation;
 }
 
 button,
 a {
   -webkit-tap-highlight-color: transparent;
+}
+
+/* Decorative loops are paused while their section is off-screen (class set by IntersectionObserver). */
+.is-idle,
+.is-idle *,
+.is-idle *::before,
+.is-idle *::after {
+  animation-play-state: paused !important;
 }
 
 :focus-visible {
@@ -60,16 +108,18 @@ a {
 .skip-link {
   position: fixed;
   z-index: 100;
-  top: 16px;
-  left: 16px;
+  top: var(--space-3);
+  left: var(--space-3);
   padding: 12px 18px;
+  border-radius: var(--radius-pill);
   color: var(--ink);
   background: var(--acid);
+  box-shadow: var(--glow-acid);
   font-size: 0.75rem;
   font-weight: 700;
   text-transform: uppercase;
-  transform: translateY(-160%);
-  transition: transform 180ms ease;
+  transform: translateY(-260%);
+  transition: transform var(--dur-mid) var(--ease-spring);
 }
 
 .skip-link:focus {
@@ -85,7 +135,7 @@ a {
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
   width: 100%;
-  padding: 24px 34px;
+  padding: 24px var(--space-5);
   font-size: 0.62rem;
   font-weight: 700;
   letter-spacing: 0.15em;
@@ -104,6 +154,12 @@ a {
   font-size: 0.84rem;
   font-weight: 900;
   letter-spacing: -0.045em;
+  transition: color var(--dur-fast) ease, text-shadow var(--dur-mid) var(--ease-out-quint);
+}
+
+.wordmark:hover {
+  color: var(--acid);
+  text-shadow: 0 0 18px rgba(223, 255, 63, 0.45);
 }
 
 .hero {
@@ -142,6 +198,9 @@ a {
 }
 
 .hero-visual {
+  /* Pointer parallax offsets, written by App.tsx on fine pointers only. */
+  --px: 0px;
+  --py: 0px;
   position: relative;
   z-index: 1;
   grid-column: 2;
@@ -162,21 +221,54 @@ a {
   object-fit: contain;
   pointer-events: none;
   user-select: none;
-  filter: drop-shadow(0 36px 44px rgba(0, 0, 0, 0.6));
+  filter: var(--drop-lift);
+  /* Independent `translate` so the parallax composes with the reveal keyframes
+     instead of being overwritten by their `both` fill. */
+  translate: var(--px) var(--py);
   transform: translate(-50%, -50%) rotate(var(--hero-product-tilt));
-  animation: hero-product-reveal 1.6s cubic-bezier(0.16, 1, 0.3, 1) 120ms both;
+  /* `backwards`, not `both`: a filled-forwards animation keeps applying its last keyframe,
+     which pins the element's `filter` to the interpolated value forever. `backwards` hands
+     the element back to these base styles the moment the reveal ends. */
+  animation: hero-product-reveal 0.95s cubic-bezier(0.16, 1, 0.3, 1) 80ms backwards;
 }
 
+/* Product spotlight — a soft citrus rim behind the can so it reads as the hero object. */
+.hero-product-halo {
+  position: absolute;
+  z-index: 2;
+  top: 50%;
+  left: 50%;
+  width: min(clamp(320px, 30vw, 520px), 56svh);
+  aspect-ratio: 1;
+  border-radius: var(--radius-round);
+  opacity: 0.55;
+  background: radial-gradient(circle at 50% 46%, rgba(255, 216, 57, 0.4), rgba(255, 61, 141, 0.24) 44%, transparent 68%);
+  filter: blur(26px);
+  pointer-events: none;
+  translate: calc(var(--px) * 0.55) calc(var(--py) * 0.55);
+  transform: translate(-50%, -50%);
+  animation: hero-halo-pulse 9s cubic-bezier(0.45, 0, 0.55, 1) infinite alternate;
+}
+
+@keyframes hero-halo-pulse {
+  from { opacity: 0.42; scale: 0.96; }
+  to { opacity: 0.62; scale: 1.04; }
+}
+
+/* The reveal animates `filter`, and `animation-fill-mode: both` keeps the final keyframe
+   applied forever — so the keyframes must carry the drop-shadow too, or the can loses it
+   permanently once the reveal ends. Both keyframes list the same functions so the blur
+   interpolates smoothly instead of falling back to a discrete swap. */
 @keyframes hero-product-reveal {
   from {
     opacity: 0;
-    filter: blur(14px);
+    filter: blur(14px) var(--drop-lift);
     transform: translate(-50%, calc(-50% + 18px)) rotate(var(--hero-product-tilt)) scale(0.96);
   }
 
   to {
     opacity: 1;
-    filter: blur(0);
+    filter: blur(0px) var(--drop-lift);
     transform: translate(-50%, -50%) rotate(var(--hero-product-tilt)) scale(1);
   }
 }
@@ -187,7 +279,9 @@ a {
   inset: 0;
   overflow: hidden;
   pointer-events: none;
-  animation: hero-fruit-reveal 1.8s cubic-bezier(0.16, 1, 0.3, 1) 180ms both;
+  /* This is the LCP element. It also animates `scale`, so Chrome keeps re-reporting LCP
+     until the entrance finishes — the duration is a direct LCP cost, not just a taste call. */
+  animation: hero-fruit-reveal 1.05s cubic-bezier(0.16, 1, 0.3, 1) 120ms backwards;
 }
 
 .hero-fruit-field::before {
@@ -202,6 +296,7 @@ a {
   -webkit-mask-image: radial-gradient(ellipse 62% 56% at 49% 52%, #000 12%, rgba(0, 0, 0, 0.82) 48%, transparent 78%);
   mask-image: radial-gradient(ellipse 62% 56% at 49% 52%, #000 12%, rgba(0, 0, 0, 0.82) 48%, transparent 78%);
   content: "";
+  translate: calc(var(--px) * 0.28) calc(var(--py) * 0.28);
   transform: rotate(-5deg);
   animation: hero-glow-breathe 12s cubic-bezier(0.45, 0, 0.55, 1) infinite alternate;
 }
@@ -217,7 +312,9 @@ a {
   opacity: 0.84;
   pointer-events: none;
   user-select: none;
-  filter: saturate(0.94) contrast(1.03) drop-shadow(0 24px 34px rgba(0, 0, 0, 0.5));
+  filter: saturate(1.04) contrast(1.05) var(--drop-mid);
+  /* Counter-moves against the can to open up depth between the two planes. */
+  translate: calc(var(--px) * -0.4) calc(var(--py) * -0.4);
   transform: translate(-50%, -50%);
   animation: hero-fruit-breathe 11s cubic-bezier(0.45, 0, 0.55, 1) infinite alternate;
 }
@@ -267,7 +364,7 @@ a {
 .craft > h2,
 .closing h2 {
   margin: 0;
-  font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+  font-family: var(--font-display);
   font-weight: 900;
   text-transform: uppercase;
 }
@@ -285,7 +382,7 @@ a {
 .hero h1 span:first-child {
   padding-left: 0.5vw;
   color: transparent;
-  background: linear-gradient(92deg, #f7f4ec 8%, #ffd839 36%, #ff713b 58%, #ff3d8d 88%);
+  background: linear-gradient(92deg, #f7f4ec 8%, var(--sun) 36%, var(--orange) 58%, var(--pink) 88%);
   background-clip: text;
   -webkit-background-clip: text;
 }
@@ -294,7 +391,7 @@ a {
   align-self: flex-start;
   padding-right: 0.075em;
   color: transparent;
-  background: linear-gradient(92deg, #ff3d8d 10%, #ff713b 39%, #dfff3f 72%, #8dff62 96%);
+  background: linear-gradient(92deg, var(--pink) 10%, var(--orange) 39%, var(--acid) 72%, var(--lime) 96%);
   background-size: 150% 100%;
   background-clip: text;
   -webkit-background-clip: text;
@@ -302,17 +399,37 @@ a {
   animation: gradient-drift 8s ease-in-out infinite alternate;
 }
 
+/* Animating background-position repaints the whole headline every frame. Worth it on a
+   desktop GPU, not on a phone — mobile keeps the static gradient. */
+@media (max-width: 720px) {
+  .hero h1 span:last-child {
+    animation: none;
+    background-position: 24% 50%;
+  }
+}
+
 @keyframes gradient-drift {
   to { background-position: 100% 50%; }
 }
 
 .hero-flavor-lockup {
+  position: relative;
   display: grid;
-  gap: 0.48rem;
+  gap: var(--space-2);
   margin-top: clamp(2rem, 5vh, 4rem);
-  padding-left: 14px;
-  border-left: 2px solid var(--pink);
+  padding-left: var(--space-3);
   text-transform: uppercase;
+}
+
+.hero-flavor-lockup::before {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 2px;
+  border-radius: var(--radius-pill);
+  background: linear-gradient(180deg, var(--pink), var(--orange) 55%, var(--acid));
+  content: "";
 }
 
 .hero-flavor-lockup strong {
@@ -330,11 +447,16 @@ a {
 .scroll-cue {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: var(--space-3);
   font-size: 0.64rem;
   font-weight: 700;
   letter-spacing: 0.16em;
   text-transform: uppercase;
+  transition: color var(--dur-fast) ease;
+}
+
+.scroll-cue:hover {
+  color: var(--acid);
 }
 
 .hero-scroll {
@@ -347,15 +469,22 @@ a {
 .scroll-line {
   position: relative;
   width: 64px;
-  height: 1px;
+  height: 2px;
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.25);
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.18);
+  transition: width var(--dur-mid) var(--ease-spring);
+}
+
+.scroll-cue:hover .scroll-line {
+  width: 84px;
 }
 
 .scroll-line::after {
   position: absolute;
   inset: 0;
-  background: var(--acid);
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--pink), var(--acid));
   content: "";
   animation: scroll-line 1.8s ease-in-out infinite;
 }
@@ -372,7 +501,6 @@ a {
 }
 
 .stage {
-  --story-progress: 0;
   position: sticky;
   top: 0;
   width: 100%;
@@ -382,18 +510,26 @@ a {
   background: #000;
 }
 
+/* Ambient bleed behind the letterboxed film.
+   The gradient itself is static: rotating it via `from calc(var(...))` forced a full
+   repaint *and* a re-blur on every scroll frame. Progress now drives only the
+   independent rotate/scale/opacity properties, which stay on the compositor. */
 .stage-glow {
+  --story-progress: 0;
   position: absolute;
   z-index: -1;
-  width: min(72vw, 920px);
+  width: min(78vw, 980px);
   aspect-ratio: 1;
   top: 50%;
   left: 50%;
-  border-radius: 50%;
-  opacity: 0.28;
-  background: conic-gradient(from calc(var(--story-progress) * 120deg), #ff3d8d, #ff713b, #f2ff59, #7aff74, #ff3d8d);
-  filter: blur(150px);
-  transform: translate(-50%, -50%) scale(calc(0.45 + var(--story-progress) * 0.35));
+  border-radius: var(--radius-round);
+  opacity: calc(0.18 + var(--story-progress) * 0.28);
+  background: conic-gradient(from 0deg, var(--pink), var(--orange), #f2ff59, #7aff74, var(--pink));
+  filter: blur(120px);
+  translate: -50% -50%;
+  rotate: calc(var(--story-progress) * 150deg);
+  scale: calc(0.52 + var(--story-progress) * 0.4);
+  will-change: transform, opacity;
 }
 
 .story-video {
@@ -403,7 +539,6 @@ a {
   width: 100%;
   height: 100%;
   object-fit: contain;
-  background: #000;
   will-change: opacity;
 }
 
@@ -419,15 +554,18 @@ a {
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  gap: 14px;
+  gap: var(--space-3);
   background: #000;
-  transition: visibility 500ms, opacity 500ms ease;
+  /* `transition: visibility 500ms` flips the element hidden halfway through the fade,
+     cutting it off. Delay the discrete flip until the opacity fade has finished. */
+  transition: opacity var(--dur-slow) var(--ease-out-quint), visibility 0s linear var(--dur-slow);
 }
 
 .film-loading span {
   width: 48px;
   height: 2px;
   overflow: hidden;
+  border-radius: var(--radius-pill);
   background: rgba(255, 255, 255, 0.18);
 }
 
@@ -435,7 +573,8 @@ a {
   display: block;
   width: 100%;
   height: 100%;
-  background: var(--acid);
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--pink), var(--acid));
   content: "";
   animation: loading 1.2s ease-in-out infinite;
 }
@@ -450,6 +589,10 @@ a {
 .film-loading.is-ready {
   visibility: hidden;
   opacity: 0;
+}
+
+.film-loading.is-ready span::after {
+  animation: none;
 }
 
 @keyframes loading {
@@ -480,6 +623,14 @@ a {
   mix-blend-mode: soft-light;
 }
 
+/* soft-light over a scrubbing video forces a full-screen backdrop readback for every
+   decoded frame — far too expensive for mobile GPUs. */
+@media (max-width: 720px) {
+  .stage-grain {
+    display: none;
+  }
+}
+
 .stage-chrome {
   position: absolute;
   z-index: 5;
@@ -487,7 +638,7 @@ a {
   display: flex;
   width: 100%;
   justify-content: space-between;
-  padding: 26px 34px;
+  padding: 26px var(--space-5);
   color: rgba(255, 255, 255, 0.68);
   font-size: 0.55rem;
   font-weight: 700;
@@ -515,7 +666,9 @@ a {
   top: 50%;
   width: min(44vw, 660px);
   opacity: 0;
-  will-change: transform, opacity, filter;
+  /* `filter` is deliberately absent: it is a repaint, and promising it here would pin
+     a blurred layer for all four beats permanently. */
+  will-change: transform, opacity;
 }
 
 .beat-left {
@@ -558,11 +711,13 @@ a {
 .beat h2 span {
   display: block;
   color: transparent;
-  background: linear-gradient(100deg, #ff3d8d 4%, #ff713b 38%, #f5e951 66%, #8dff62 96%);
+  background: linear-gradient(100deg, var(--pink) 4%, var(--orange) 38%, #f5e951 66%, var(--lime) 96%);
   background-size: 180% 100%;
   background-clip: text;
   -webkit-background-clip: text;
-  filter: drop-shadow(0 0 22px rgba(255, 89, 72, 0.13));
+  /* Static halo instead of drop-shadow(): a text-shadow rasterizes once with the
+     promoted layer rather than re-filtering whenever the beat's blur steps. */
+  text-shadow: 0 0 28px rgba(255, 89, 72, 0.18);
 }
 
 .beat small {
@@ -577,17 +732,20 @@ a {
 .story-progress {
   position: absolute;
   z-index: 7;
-  right: 34px;
-  bottom: 14px;
-  left: 34px;
-  height: 1px;
-  background: rgba(255, 255, 255, 0.14);
+  right: var(--space-5);
+  bottom: var(--space-3);
+  left: var(--space-5);
+  height: 2px;
+  overflow: hidden;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.12);
 }
 
 .story-progress div {
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, var(--pink), var(--orange), var(--acid), var(--lime));
+  border-radius: inherit;
+  background: var(--citrus-sweep);
   transform: scaleX(0);
   transform-origin: left;
   will-change: transform;
@@ -667,7 +825,7 @@ a {
   height: 28px;
   place-items: center;
   border: 1px solid currentColor;
-  border-radius: 50%;
+  border-radius: var(--radius-round);
   font-size: 0.48rem;
 }
 
@@ -705,7 +863,7 @@ a {
 
 .concept h2 em {
   color: transparent;
-  background: linear-gradient(90deg, #ff367e, #ff713b 38%, #c6d51a 88%);
+  background: linear-gradient(90deg, #ff367e, var(--orange) 38%, #c6d51a 88%);
   background-clip: text;
   -webkit-background-clip: text;
   font-style: normal;
@@ -724,7 +882,7 @@ a {
   bottom: 0;
   left: 0;
   width: 2px;
-  background: linear-gradient(var(--pink), var(--orange) 48%, #b9d819);
+  background: linear-gradient(var(--pink), var(--orange) 48%, var(--leaf));
   content: "";
 }
 
@@ -756,7 +914,7 @@ a {
 
 .concept-body .lead em {
   color: transparent;
-  background: linear-gradient(90deg, #ff3d6e, #ff713b 52%, #a8c816);
+  background: linear-gradient(90deg, var(--ruby), var(--orange) 52%, #a8c816);
   background-clip: text;
   -webkit-background-clip: text;
   font-style: normal;
@@ -791,6 +949,7 @@ a {
   padding: 18px 18px 16px;
   border-right: 1px solid rgba(5, 5, 5, 0.16);
   overflow: hidden;
+  isolation: isolate;
 }
 
 .flavor-spectrum li:last-child {
@@ -802,16 +961,44 @@ a {
   right: 0;
   bottom: 0;
   left: 0;
-  height: 4px;
+  height: 8px;
   background: var(--flavor-color);
   content: "";
+  transform: scaleY(0.5);
+  transform-origin: bottom;
+  transition: transform var(--dur-mid) var(--ease-spring);
 }
 
-.flavor-spectrum li:nth-child(1) { --flavor-color: #ff3d6e; }
-.flavor-spectrum li:nth-child(2) { --flavor-color: #ff8a32; }
-.flavor-spectrum li:nth-child(3) { --flavor-color: #ff3d8d; }
-.flavor-spectrum li:nth-child(4) { --flavor-color: #b9d819; }
-.flavor-spectrum li:nth-child(5) { --flavor-color: #a71948; }
+/* Fruit wash on hover — opacity only, so it never touches layout or paint cost. */
+.flavor-spectrum li::after {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  opacity: 0;
+  background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--flavor-color) 22%, transparent));
+  content: "";
+  transition: opacity var(--dur-mid) var(--ease-out-quint);
+}
+
+@media (hover: hover) {
+  .flavor-spectrum li:hover::before {
+    transform: scaleY(1);
+  }
+
+  .flavor-spectrum li:hover::after {
+    opacity: 1;
+  }
+
+  .flavor-spectrum li:hover strong {
+    color: var(--ink);
+  }
+}
+
+.flavor-spectrum li:nth-child(1) { --flavor-color: var(--ruby); }
+.flavor-spectrum li:nth-child(2) { --flavor-color: var(--mango); }
+.flavor-spectrum li:nth-child(3) { --flavor-color: var(--pink); }
+.flavor-spectrum li:nth-child(4) { --flavor-color: var(--leaf); }
+.flavor-spectrum li:nth-child(5) { --flavor-color: var(--berry); }
 
 .flavor-spectrum span {
   color: rgba(5, 5, 5, 0.42);
@@ -843,6 +1030,15 @@ a {
   border-right: 1px solid rgba(5, 5, 5, 0.22);
 }
 
+/* The grid cells carry hairline rules, so they must not translate — lifting one would
+   detach its borders from its neighbours. The accent and the mark carry the feedback. */
+@media (hover: hover) {
+  .concept-stats article:hover .stat-mark {
+    rotate: 12deg;
+    scale: 1.12;
+  }
+}
+
 .stat-mark {
   position: absolute;
   top: 26px;
@@ -850,12 +1046,13 @@ a {
   display: block;
   width: 32px;
   height: 32px;
+  transition: rotate var(--dur-mid) var(--ease-spring), scale var(--dur-mid) var(--ease-spring);
 }
 
 .stat-mark-slice {
-  border: 3px solid #ff713b;
-  border-radius: 50%;
-  background: repeating-conic-gradient(from -10deg, #ff3d8d 0 23deg, var(--paper) 23deg 28deg);
+  border: 3px solid var(--orange);
+  border-radius: var(--radius-round);
+  background: repeating-conic-gradient(from -10deg, var(--pink) 0 23deg, var(--paper) 23deg 28deg);
   box-shadow: inset 0 0 0 4px var(--paper);
 }
 
@@ -863,16 +1060,16 @@ a {
   width: 8px;
   height: 8px;
   margin: 10px 20px 0 0;
-  border-radius: 50%;
-  background: #ff3d6e;
-  box-shadow: 12px -5px 0 #ff8a32, 23px 1px 0 #ff3d8d, 6px 12px 0 #b9d819, 19px 15px 0 #a71948;
+  border-radius: var(--radius-round);
+  background: var(--ruby);
+  box-shadow: 12px -5px 0 var(--mango), 23px 1px 0 var(--pink), 6px 12px 0 var(--leaf), 19px 15px 0 var(--berry);
 }
 
 .stat-mark-seed {
   width: 22px;
   height: 30px;
   border-radius: 70% 30% 68% 32% / 58% 42% 68% 32%;
-  background: linear-gradient(145deg, #a71948, #ff3d8d);
+  background: linear-gradient(145deg, var(--berry), var(--pink));
   transform: rotate(25deg);
 }
 
@@ -941,7 +1138,7 @@ a {
   width: 100%;
   height: 100%;
   overflow: visible;
-  filter: drop-shadow(0 8px 10px rgba(255, 61, 141, 0.1));
+  filter: var(--drop-rim);
   transform-origin: center top;
 }
 
@@ -1051,14 +1248,31 @@ a {
   top: -1px;
   right: 0;
   left: 0;
-  height: 2px;
+  height: 4px;
   background: var(--taste-color);
   content: "";
+  transform: scaleY(0.5);
+  transform-origin: top;
+  transition: transform var(--dur-mid) var(--ease-spring);
 }
 
-.craft-grid article:nth-child(1) { --taste-color: linear-gradient(90deg, #ff3d6e, #b9d819); }
-.craft-grid article:nth-child(2) { --taste-color: linear-gradient(90deg, #ff8a32, #ff3d8d); }
-.craft-grid article:nth-child(3) { --taste-color: linear-gradient(90deg, #a71948, #ff3d6e); }
+@media (hover: hover) {
+  .craft-grid article:hover::before {
+    transform: scaleY(1);
+  }
+
+  .craft-grid article:hover p {
+    color: rgba(255, 255, 255, 0.78);
+  }
+
+  .craft-grid article:hover > span {
+    text-shadow: 0 0 18px rgba(223, 255, 63, 0.55);
+  }
+}
+
+.craft-grid article:nth-child(1) { --taste-color: linear-gradient(90deg, var(--ruby), var(--leaf)); }
+.craft-grid article:nth-child(2) { --taste-color: linear-gradient(90deg, var(--mango), var(--pink)); }
+.craft-grid article:nth-child(3) { --taste-color: linear-gradient(90deg, var(--berry), var(--ruby)); }
 
 .craft-grid article:not(:first-child) {
   padding-left: 3vw;
@@ -1087,12 +1301,17 @@ a {
   color: rgba(255, 255, 255, 0.52);
   font-size: 0.87rem;
   line-height: 1.6;
+  transition: color var(--dur-mid) ease;
+}
+
+.craft-grid article > span {
+  transition: text-shadow var(--dur-mid) var(--ease-out-quint);
 }
 
 .craft-note {
   margin: 7rem 0 0;
   color: transparent;
-  background: linear-gradient(90deg, #ff3d6e, #ff8a32, #ff3d8d, #b9d819, #a71948);
+  background: linear-gradient(90deg, var(--ruby), var(--mango), var(--pink), var(--leaf), var(--berry));
   background-clip: text;
   -webkit-background-clip: text;
   font-size: 0.56rem;
@@ -1117,7 +1336,7 @@ a {
   width: 56vw;
   aspect-ratio: 1;
   border: min(12vw, 160px) solid rgba(255, 61, 141, 0.2);
-  border-radius: 50%;
+  border-radius: var(--radius-round);
   content: "";
   pointer-events: none;
 }
@@ -1131,7 +1350,7 @@ a {
   height: auto;
   pointer-events: none;
   user-select: none;
-  filter: drop-shadow(0 28px 38px rgba(72, 17, 0, 0.22));
+  filter: var(--drop-warm);
   transform: rotate(-4deg);
   transform-origin: 66% 68%;
   animation: fruit-orbit 7s ease-in-out infinite alternate;
@@ -1173,24 +1392,47 @@ a {
 }
 
 .closing-links a {
+  position: relative;
   display: flex;
   width: 48%;
   align-items: center;
   justify-content: space-between;
-  padding: 24px 0;
+  padding: 24px var(--space-3) 24px 0;
+  overflow: hidden;
   font-size: 0.72rem;
   font-weight: 800;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  transition: opacity 160ms ease;
 }
 
-.closing-links a:hover {
-  opacity: 0.55;
+/* Citrus sweep under the label instead of a flat opacity dip. */
+.closing-links a::before {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  border-radius: var(--radius-pill);
+  background: var(--citrus-sweep);
+  content: "";
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--dur-slow) var(--ease-out-quint);
 }
 
 .closing-links a span {
   font-size: 1rem;
+  transition: transform var(--dur-mid) var(--ease-spring);
+}
+
+@media (hover: hover) {
+  .closing-links a:hover::before {
+    transform: scaleX(1);
+  }
+
+  .closing-links a:hover span {
+    transform: translate(4px, -4px);
+  }
 }
 
 footer {
@@ -1227,7 +1469,7 @@ footer {
   padding: 7px 0;
   border-bottom: 1px solid rgba(255, 255, 255, 0.28);
   text-transform: uppercase;
-  transition: border-color 180ms ease, color 180ms ease;
+  transition: border-color var(--dur-mid) ease, color var(--dur-mid) ease;
 }
 
 .footer-contact span {
@@ -1243,7 +1485,7 @@ footer {
   color: var(--pink);
   font-size: 0.85rem;
   font-style: normal;
-  transition: transform 180ms ease;
+  transition: transform var(--dur-mid) var(--ease-spring);
 }
 
 .footer-contact:hover {
@@ -1252,7 +1494,7 @@ footer {
 }
 
 .footer-contact:hover i {
-  transform: translate(2px, -2px);
+  transform: translate(4px, -4px);
 }
 
 .footer-year {
@@ -1313,14 +1555,18 @@ noscript {
     width: min(clamp(148px, 18vw, 190px), 29svh);
   }
 
+  .hero-product-halo {
+    width: min(clamp(280px, 34vw, 420px), 50svh);
+  }
+
   .stage-chrome {
-    padding-right: 20px;
-    padding-left: 20px;
+    padding-right: var(--space-4);
+    padding-left: var(--space-4);
   }
 
   .story-progress {
-    right: 20px;
-    left: 20px;
+    right: var(--space-4);
+    left: var(--space-4);
   }
 
   .beat {
@@ -1436,6 +1682,14 @@ noscript {
     top: 50%;
     left: 50%;
     width: min(clamp(126px, 32vw, 168px), 33svh);
+  }
+
+  .hero-product-halo {
+    width: min(clamp(240px, 62vw, 340px), 46svh);
+    opacity: 0.5;
+    filter: blur(18px);
+    /* One less continuously-blurred layer to recomposite on phone GPUs. */
+    animation: none;
   }
 
   .hero-scroll {
@@ -1598,8 +1852,11 @@ noscript {
   .liquid-divider__graphic,
   .liquid-divider__drop,
   .hero-product,
+  .hero-product-halo,
   .hero-fruit-frame,
-  .hero-fruit-field::before {
+  .hero-fruit-field::before,
+  .closing-fruit-orbit,
+  .scroll-line::after {
     animation: none !important;
   }
 

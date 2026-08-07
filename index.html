@@ -16,6 +16,10 @@
     <link rel="icon" type="image/svg+xml" href="/fruit/fruit-icon.svg" />
     <link rel="manifest" href="/fruit/site.webmanifest" />
 
+    <!-- Hero art is the LCP candidate; both are discovered late because React renders them. -->
+    <link rel="preload" as="image" type="image/webp" href="/fruit/apkmason-can.webp" fetchpriority="high" />
+    <link rel="preload" as="image" type="image/webp" href="/fruit/hero-fruit-frame.webp" fetchpriority="high" />
+
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="APKMASON" />
     <meta property="og:locale" content="en_US" />

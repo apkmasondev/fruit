@@ -28,11 +28,11 @@ export default function LiquidDivider() {
             <stop offset="1" stopColor="var(--formula-edge-end)" />
           </linearGradient>
           <linearGradient id="concentrate-rim" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0" stopColor="#ff3d6e" />
-            <stop offset="0.3" stopColor="#ff8a32" />
-            <stop offset="0.57" stopColor="#ff3d8d" />
-            <stop offset="0.8" stopColor="#b9d819" />
-            <stop offset="1" stopColor="#a71948" />
+            <stop offset="0" stopColor="var(--ruby)" />
+            <stop offset="0.3" stopColor="var(--mango)" />
+            <stop offset="0.57" stopColor="var(--pink)" />
+            <stop offset="0.8" stopColor="var(--leaf)" />
+            <stop offset="1" stopColor="var(--berry)" />
           </linearGradient>
         </defs>
         <path className="liquid-divider__body" d={BODY_PATH} fill="url(#concentrate-fill)" />

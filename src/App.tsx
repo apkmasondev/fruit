@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import LiquidDivider from './components/LiquidDivider'
 
 const VIDEO_ONE_DESKTOP = `${import.meta.env.BASE_URL}video/01-hand-energy-reveal-gop1.mp4`
@@ -7,11 +7,15 @@ const VIDEO_ONE_MOBILE = `${import.meta.env.BASE_URL}video/01-hand-energy-reveal
 const VIDEO_TWO_MOBILE = `${import.meta.env.BASE_URL}video/02-apkmason-beauty-shot-mobile-gop1.mp4`
 const HERO_FRUIT_FRAME = `${import.meta.env.BASE_URL}hero-fruit-frame.webp`
 const HERO_PRODUCT = `${import.meta.env.BASE_URL}apkmason-can.webp`
-const FRUIT_ORBIT = `${import.meta.env.BASE_URL}fruit-orbit.png`
+const FRUIT_ORBIT = `${import.meta.env.BASE_URL}fruit-orbit.webp`
 const MOBILE_MEDIA_QUERY = '(max-width: 720px)'
+const FINE_POINTER_QUERY = '(hover: hover) and (pointer: fine)'
 const MOBILE_SEEK_FRAME_RATE = 24
 const DESKTOP_SEEK_THRESHOLD = 0.035
 const MOBILE_SEEK_THRESHOLD = 1 / MOBILE_SEEK_FRAME_RATE - 0.002
+const BEAT_BLUR_STEP = 2
+const BEAT_BLUR_MAX = 8
+const HERO_PARALLAX_RANGE = 15
 
 type Beat = {
   eyebrow: string
@@ -36,28 +40,60 @@ function beatVisibility(progress: number, start: number, end: number) {
   return clamp(Math.min((progress - start) / fade, (end - progress) / fade))
 }
 
-function seekVideoFrame(video: HTMLVideoElement | null, progress: number, useMobileCadence: boolean) {
-  if (!video?.duration || !Number.isFinite(video.duration)) return
+/**
+ * Scrubbing a video by assigning `currentTime` on every scroll frame floods the
+ * decoder: mobile Safari and Chrome drop or queue seeks while one is in flight,
+ * which is what makes the film lag behind the scroll and then snap forward.
+ * Instead we keep only the newest target and commit it once the decoder is idle.
+ */
+function createScrubber(video: HTMLVideoElement) {
+  let pendingTime: number | null = null
 
-  const maxTime = Math.max(video.duration - 0.04, 0)
-  const rawTargetTime = progress * maxTime
-  const targetTime = useMobileCadence
-    ? Math.min(maxTime, Math.round(rawTargetTime * MOBILE_SEEK_FRAME_RATE) / MOBILE_SEEK_FRAME_RATE)
-    : rawTargetTime
-  const threshold = useMobileCadence ? MOBILE_SEEK_THRESHOLD : DESKTOP_SEEK_THRESHOLD
+  const commit = () => {
+    if (pendingTime === null || video.seeking) return
+    const target = pendingTime
+    pendingTime = null
+    if (Math.abs(video.currentTime - target) > 0.001) video.currentTime = target
+  }
 
-  if (Math.abs(video.currentTime - targetTime) > threshold) video.currentTime = targetTime
+  video.addEventListener('seeked', commit)
+
+  return {
+    seek(progress: number, useMobileCadence: boolean) {
+      const duration = video.duration
+      if (!duration || !Number.isFinite(duration)) return
+
+      const maxTime = Math.max(duration - 0.04, 0)
+      const rawTargetTime = clamp(progress) * maxTime
+      const targetTime = useMobileCadence
+        ? Math.min(maxTime, Math.round(rawTargetTime * MOBILE_SEEK_FRAME_RATE) / MOBILE_SEEK_FRAME_RATE)
+        : rawTargetTime
+      const threshold = useMobileCadence ? MOBILE_SEEK_THRESHOLD : DESKTOP_SEEK_THRESHOLD
+
+      if (Math.abs((pendingTime ?? video.currentTime) - targetTime) <= threshold) return
+      pendingTime = targetTime
+      commit()
+    },
+    dispose() {
+      video.removeEventListener('seeked', commit)
+    },
+  }
 }
 
 function App() {
+  const heroRef = useRef<HTMLElement>(null)
+  const heroVisualRef = useRef<HTMLDivElement>(null)
+  const closingRef = useRef<HTMLElement>(null)
   const storyRef = useRef<HTMLElement>(null)
-  const stageRef = useRef<HTMLDivElement>(null)
+  const glowRef = useRef<HTMLDivElement>(null)
   const videoOneRef = useRef<HTMLVideoElement>(null)
   const videoTwoRef = useRef<HTMLVideoElement>(null)
   const beatRefs = useRef<Array<HTMLDivElement | null>>([])
   const progressRef = useRef<HTMLDivElement>(null)
   const chapterRef = useRef<HTMLSpanElement>(null)
-  const [metadataReady, setMetadataReady] = useState(0)
+  const syncRef = useRef<(() => void) | null>(null)
+  const readyCountRef = useRef(0)
+  const [filmStatus, setFilmStatus] = useState<'loading' | 'ready' | 'error'>('loading')
   const [reducedMotion, setReducedMotion] = useState(false)
 
   useEffect(() => {
@@ -73,74 +109,206 @@ function App() {
     if (reducedMotion && finalVideo?.duration && Number.isFinite(finalVideo.duration)) {
       finalVideo.currentTime = Math.max(finalVideo.duration * 0.92, 0.01)
     }
-  }, [reducedMotion, metadataReady])
+  }, [reducedMotion, filmStatus])
+
+  /** Pause decorative loops while their section is off-screen — they cost paint forever otherwise. */
+  useEffect(() => {
+    const sections = [heroRef.current, closingRef.current].filter((node): node is HTMLElement => Boolean(node))
+    if (!sections.length || typeof IntersectionObserver === 'undefined') return
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) entry.target.classList.toggle('is-idle', !entry.isIntersecting)
+      },
+      { rootMargin: '15% 0px' },
+    )
+    for (const section of sections) observer.observe(section)
+    return () => observer.disconnect()
+  }, [])
+
+  /** Pointer parallax on the hero product. Fine pointers only, scoped to the hero, transform-only. */
+  useEffect(() => {
+    const hero = heroRef.current
+    const visual = heroVisualRef.current
+    if (reducedMotion || !hero || !visual) return
+    if (!window.matchMedia(FINE_POINTER_QUERY).matches) return
+
+    let frame = 0
+    let targetX = 0
+    let targetY = 0
+    let currentX = 0
+    let currentY = 0
+
+    const tick = () => {
+      currentX += (targetX - currentX) * 0.085
+      currentY += (targetY - currentY) * 0.085
+      visual.style.setProperty('--px', `${currentX.toFixed(2)}px`)
+      visual.style.setProperty('--py', `${currentY.toFixed(2)}px`)
+      frame = Math.abs(targetX - currentX) > 0.04 || Math.abs(targetY - currentY) > 0.04
+        ? window.requestAnimationFrame(tick)
+        : 0
+    }
+
+    const start = () => {
+      if (!frame) frame = window.requestAnimationFrame(tick)
+    }
+
+    const handleMove = (event: PointerEvent) => {
+      if (event.pointerType !== 'mouse') return
+      targetX = ((event.clientX / window.innerWidth) * 2 - 1) * HERO_PARALLAX_RANGE
+      targetY = ((event.clientY / window.innerHeight) * 2 - 1) * HERO_PARALLAX_RANGE
+      start()
+    }
+
+    const handleLeave = () => {
+      targetX = 0
+      targetY = 0
+      start()
+    }
+
+    hero.addEventListener('pointermove', handleMove, { passive: true })
+    hero.addEventListener('pointerleave', handleLeave)
+    return () => {
+      hero.removeEventListener('pointermove', handleMove)
+      hero.removeEventListener('pointerleave', handleLeave)
+      if (frame) window.cancelAnimationFrame(frame)
+      visual.style.removeProperty('--px')
+      visual.style.removeProperty('--py')
+    }
+  }, [reducedMotion])
 
   useEffect(() => {
     if (reducedMotion) return
+    const story = storyRef.current
+    const glow = glowRef.current
+    if (!story || !glow) return
+
+    const compactViewport = window.matchMedia(MOBILE_MEDIA_QUERY)
+    const scrubberOne = videoOneRef.current ? createScrubber(videoOneRef.current) : null
+    const scrubberTwo = videoTwoRef.current ? createScrubber(videoTwoRef.current) : null
 
     let frame = 0
     let lastProgress = -1
-    const compactViewport = window.matchMedia(MOBILE_MEDIA_QUERY)
+    let lastChapter = ''
+    let storyTop = 0
+    let scrollableDistance = 1
+    const lastBeatOpacity = beats.map(() => -1)
+    const lastBeatBlur = beats.map(() => -1)
+    const layerState = [
+      { video: videoOneRef.current, opacity: -1 },
+      { video: videoTwoRef.current, opacity: -1 },
+    ]
+
+    /** Layout reads happen here only — never inside the per-frame loop. */
+    const measure = () => {
+      storyTop = story.getBoundingClientRect().top + window.scrollY
+      scrollableDistance = Math.max(story.offsetHeight - window.innerHeight, 1)
+      lastProgress = -1
+    }
+
+    const applyLayer = (index: number, opacity: number) => {
+      const layer = layerState[index]
+      const video = layer.video
+      if (!video) return
+      const next = Math.round(opacity * 1000) / 1000
+      if (next === layer.opacity) return
+      layer.opacity = next
+      video.style.opacity = String(next)
+      // Drop the fully faded layer out of the compositor instead of blending a transparent full-screen video.
+      video.style.visibility = next <= 0 ? 'hidden' : 'visible'
+    }
 
     const update = () => {
       frame = 0
-      const story = storyRef.current
-      const stage = stageRef.current
-      if (!story || !stage) return
-
-      const rect = story.getBoundingClientRect()
-      const scrollableDistance = Math.max(story.offsetHeight - window.innerHeight, 1)
-      const progress = clamp(-rect.top / scrollableDistance)
-
-      if (Math.abs(progress - lastProgress) < 0.0001) return
+      const progress = clamp((window.scrollY - storyTop) / scrollableDistance)
+      if (Math.abs(progress - lastProgress) < 0.0002) return
       lastProgress = progress
-      stage.style.setProperty('--story-progress', progress.toFixed(4))
 
-      const firstVideoProgress = clamp(progress / 0.51)
-      const secondVideoProgress = clamp((progress - 0.46) / 0.47)
-      const firstVideo = videoOneRef.current
-      const secondVideo = videoTwoRef.current
-      const useMobileCadence = compactViewport.matches
-
-      seekVideoFrame(firstVideo, firstVideoProgress, useMobileCadence)
-      seekVideoFrame(secondVideo, secondVideoProgress, useMobileCadence)
+      glow.style.setProperty('--story-progress', progress.toFixed(4))
 
       const crossfade = clamp((progress - 0.455) / 0.1)
-      if (firstVideo) firstVideo.style.opacity = String(1 - crossfade)
-      if (secondVideo) secondVideo.style.opacity = String(crossfade)
+      applyLayer(0, 1 - crossfade)
+      applyLayer(1, crossfade)
 
-      beatRefs.current.forEach((beat, index) => {
-        if (!beat) return
+      const useMobileCadence = compactViewport.matches
+      if (crossfade < 1) scrubberOne?.seek(progress / 0.51, useMobileCadence)
+      if (crossfade > 0) scrubberTwo?.seek((progress - 0.46) / 0.47, useMobileCadence)
+
+      for (let index = 0; index < beats.length; index += 1) {
+        const beat = beatRefs.current[index]
+        if (!beat) continue
         const visibility = beatVisibility(progress, beats[index].start, beats[index].end)
-        beat.style.opacity = visibility.toFixed(3)
-        beat.style.setProperty('--beat-y', `${(1 - visibility) * 26}px`)
-        beat.style.filter = `blur(${(1 - visibility) * 8}px)`
-        beat.style.pointerEvents = visibility > 0.5 ? 'auto' : 'none'
-      })
+        const opacity = Math.round(visibility * 1000) / 1000
+        if (opacity !== lastBeatOpacity[index]) {
+          lastBeatOpacity[index] = opacity
+          beat.style.opacity = String(opacity)
+          beat.style.setProperty('--beat-y', `${((1 - visibility) * 26).toFixed(2)}px`)
+        }
+        // Blur is a repaint, not a composite: quantize it so a beat repaints ~5x per pass, not 60x per second.
+        const blur = Math.round(((1 - visibility) * BEAT_BLUR_MAX) / BEAT_BLUR_STEP) * BEAT_BLUR_STEP
+        if (blur !== lastBeatBlur[index]) {
+          lastBeatBlur[index] = blur
+          beat.style.filter = blur ? `blur(${blur}px)` : ''
+        }
+      }
 
-      if (progressRef.current) progressRef.current.style.transform = `scaleX(${progress})`
-      if (chapterRef.current) chapterRef.current.textContent = `${String(Math.min(4, Math.floor(progress * 4) + 1)).padStart(2, '0')} / 04`
+      if (progressRef.current) progressRef.current.style.transform = `scaleX(${progress.toFixed(4)})`
+
+      const chapter = `${String(Math.min(4, Math.floor(progress * 4) + 1)).padStart(2, '0')} / 04`
+      if (chapter !== lastChapter) {
+        lastChapter = chapter
+        if (chapterRef.current) chapterRef.current.textContent = chapter
+      }
     }
 
     const requestUpdate = () => {
       if (!frame) frame = window.requestAnimationFrame(update)
     }
 
-    update()
-    window.addEventListener('scroll', requestUpdate, { passive: true })
-    window.addEventListener('resize', requestUpdate)
-    return () => {
-      window.removeEventListener('scroll', requestUpdate)
-      window.removeEventListener('resize', requestUpdate)
-      if (frame) window.cancelAnimationFrame(frame)
+    const handleResize = () => {
+      measure()
+      requestUpdate()
     }
-  }, [reducedMotion, metadataReady])
 
-  const handleMetadata = (event: React.SyntheticEvent<HTMLVideoElement>, finalFrame = false) => {
-    const video = event.currentTarget
-    video.currentTime = reducedMotion && finalFrame ? Math.max(video.duration * 0.92, 0.01) : 0.01
-    setMetadataReady((count) => count + 1)
-  }
+    measure()
+    update()
+    syncRef.current = requestUpdate
+
+    // The story is sized in viewport units, so its height changes with the layout, not just the window.
+    const resizeObserver = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(handleResize)
+    resizeObserver?.observe(story)
+    window.addEventListener('scroll', requestUpdate, { passive: true })
+    window.addEventListener('resize', handleResize, { passive: true })
+    window.addEventListener('orientationchange', handleResize)
+
+    return () => {
+      syncRef.current = null
+      resizeObserver?.disconnect()
+      window.removeEventListener('scroll', requestUpdate)
+      window.removeEventListener('resize', handleResize)
+      window.removeEventListener('orientationchange', handleResize)
+      if (frame) window.cancelAnimationFrame(frame)
+      scrubberOne?.dispose()
+      scrubberTwo?.dispose()
+    }
+  }, [reducedMotion])
+
+  const handleMetadata = useCallback(
+    (event: React.SyntheticEvent<HTMLVideoElement>, finalFrame = false) => {
+      const video = event.currentTarget
+      const duration = video.duration
+      if (Number.isFinite(duration) && duration > 0) {
+        video.currentTime = reducedMotion && finalFrame ? Math.max(duration * 0.92, 0.01) : 0.01
+      }
+      readyCountRef.current += 1
+      if (readyCountRef.current >= 2) setFilmStatus('ready')
+      syncRef.current?.()
+    },
+    [reducedMotion],
+  )
+
+  // Without this a failed video download leaves an opaque loader parked over the whole story.
+  const handleVideoError = useCallback(() => setFilmStatus('error'), [])
 
   return (
     <>
@@ -155,7 +323,7 @@ function App() {
       </header>
 
       <main>
-        <section className="hero" id="top" aria-labelledby="hero-title">
+        <section className="hero" id="top" ref={heroRef} aria-labelledby="hero-title">
           <div className="hero-layout">
             <div className="hero-copy">
               <p className="hero-kicker">A fictional drink. A real current.</p>
@@ -168,11 +336,14 @@ function App() {
                 <span>05 fruit blend / lightly sparkling</span>
               </div>
             </div>
-            <div className="hero-visual" aria-hidden="true">
+            <div className="hero-visual" ref={heroVisualRef} aria-hidden="true">
+              <div className="hero-product-halo" />
               <img
                 className="hero-product"
                 src={HERO_PRODUCT}
                 alt=""
+                width={708}
+                height={1378}
                 decoding="async"
                 fetchPriority="high"
               />
@@ -181,6 +352,8 @@ function App() {
                   className="hero-fruit-frame"
                   src={HERO_FRUIT_FRAME}
                   alt=""
+                  width={1254}
+                  height={1254}
                   decoding="async"
                   fetchPriority="high"
                 />
@@ -194,9 +367,9 @@ function App() {
         </section>
 
         <section className={`story${reducedMotion ? ' is-reduced' : ''}`} id="story" ref={storyRef} aria-label="Fruit Energy product reveal">
-          <div className="stage" ref={stageRef}>
-            <div className="stage-glow" aria-hidden="true" />
-            <div className={`film-loading${metadataReady >= 2 ? ' is-ready' : ''}`} aria-hidden="true">
+          <div className="stage">
+            <div className="stage-glow" ref={glowRef} aria-hidden="true" />
+            <div className={`film-loading${filmStatus === 'loading' ? '' : ' is-ready'}`} aria-hidden="true">
               <span />
               <p>CHARGING COLOR</p>
             </div>
@@ -207,9 +380,12 @@ function App() {
               preload="metadata"
               muted
               playsInline
+              disablePictureInPicture
+              disableRemotePlayback
               tabIndex={-1}
               aria-hidden="true"
               onLoadedMetadata={(event) => handleMetadata(event)}
+              onError={handleVideoError}
             >
               <source src={VIDEO_ONE_MOBILE} type="video/mp4" media={MOBILE_MEDIA_QUERY} />
               <source src={VIDEO_ONE_DESKTOP} type="video/mp4" />
@@ -220,9 +396,12 @@ function App() {
               preload="metadata"
               muted
               playsInline
+              disablePictureInPicture
+              disableRemotePlayback
               tabIndex={-1}
               aria-hidden="true"
               onLoadedMetadata={(event) => handleMetadata(event, true)}
+              onError={handleVideoError}
             >
               <source src={VIDEO_TWO_MOBILE} type="video/mp4" media={MOBILE_MEDIA_QUERY} />
               <source src={VIDEO_TWO_DESKTOP} type="video/mp4" />
@@ -317,11 +496,13 @@ function App() {
           <p className="craft-note">RUBY GRAPEFRUIT / MANGO / DRAGON FRUIT / LIME / RED BERRY</p>
         </section>
 
-        <section className="closing" aria-labelledby="closing-title">
+        <section className="closing" ref={closingRef} aria-labelledby="closing-title">
           <img
             className="closing-fruit-orbit"
             src={FRUIT_ORBIT}
             alt=""
+            width={1672}
+            height={941}
             loading="lazy"
             decoding="async"
             fetchPriority="low"
