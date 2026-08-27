@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.2.0] - 2026-08-27
+
+### Optimized
+- **One master film instead of four clips**: the two shots are now joined by a 1.5 s crossfade baked into the encode, so the page mounts a single `<video>` and runs a single decoder. Previously two full-screen 1080p layers were mounted at once, and across the transition window *both* were being seeked and alpha-blended on every scroll frame — the most expensive moment of the whole story was also the one doing double work. The baked join also drops the 1.5 s of footage that used to exist twice (20 s of video → an 18.5 s master).
+- **Desktop film 47.6 MB → 21.8 MB (−54 %)**: the old pair was encoded at CRF ≈18 (15.6 and 24.3 Mbps) to preserve a source that is itself only 5–6 Mbps, so most of those bits were spent re-encoding the source's own compression artifacts. Re-cut from the Google Flow originals at CRF 23 with `aq-mode=3`, which is indistinguishable from the source at 100 % crop on a film that ships behind a vignette, a grain layer and headline type.
+- **Mobile film 7.1 MB → 6.2 MB** at slightly *higher* fidelity (SSIM 0.973 vs ≈0.971), for the same structural reason — one file, one decoder, no dual seek.
+- **`faststart` on the desktop film**: the old desktop clips carried their `moov` atom *after* ~50 MB of `mdat`, so `preload="metadata"` could not report a duration until the browser had range-requested the tail of the file. Both masters now front-load `moov` (byte 36). The mobile clips already had this; the desktop ones never did.
+- **Kept GOP=1**: measured against GOP 2/4/8 in Chrome over 300 seeks each. GOP=8 halves the file again but pushes p95 seek latency to 21–23 ms, past the 16.7 ms frame budget, which is the stutter this project already fixed once. All-intra stays at 9.6 ms mean / 13–15 ms p95.
+- **Dead weight removed**: `public/fruit-orbit.png` (1.05 MB), superseded by the WebP in 1.1.0 and unreferenced since.
+
+### Fixed
+- **Preload was a 404 in dev**: `index.html` hard-coded `/fruit/…` into the hero preload, icon and manifest hrefs, and Vite's dev server prepends `base` to root-relative URLs — so the LCP preload resolved to `/fruit/fruit/apkmason-can.webp` and returned the 3.7 kB HTML fallback instead of the 168 kB image. Production was unaffected, but it meant the 1.1.0 LCP work could not be verified locally. The hrefs are now relative and resolve correctly under both dev and build. (`%BASE_URL%` does not help here — dev prepends `base` to its expansion too.)
+
+### Changed
+- **Reduced motion** parks the film on its true final frame rather than 92 % of the way through the second clip; the master's closing frame is the finished beauty shot.
+
 ## [1.1.0] - 2026-08-06
 
 ### Fixed

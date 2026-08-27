@@ -539,11 +539,6 @@ a {
   width: 100%;
   height: 100%;
   object-fit: contain;
-  will-change: opacity;
-}
-
-.story-video-two {
-  opacity: 0;
 }
 
 .film-loading {
@@ -1873,14 +1868,9 @@ noscript {
     height: 100svh;
   }
 
-  .story.is-reduced .story-video-one,
   .story.is-reduced .beats .beat:not(:last-child),
   .story.is-reduced .story-progress {
     display: none;
-  }
-
-  .story.is-reduced .story-video-two {
-    opacity: 1;
   }
 
   .story.is-reduced .beat:last-child {

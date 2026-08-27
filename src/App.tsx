@@ -1,10 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import LiquidDivider from './components/LiquidDivider'
 
-const VIDEO_ONE_DESKTOP = `${import.meta.env.BASE_URL}video/01-hand-energy-reveal-gop1.mp4`
-const VIDEO_TWO_DESKTOP = `${import.meta.env.BASE_URL}video/02-apkmason-beauty-shot-gop1.mp4`
-const VIDEO_ONE_MOBILE = `${import.meta.env.BASE_URL}video/01-hand-energy-reveal-mobile-gop1.mp4`
-const VIDEO_TWO_MOBILE = `${import.meta.env.BASE_URL}video/02-apkmason-beauty-shot-mobile-gop1.mp4`
+const FILM_DESKTOP = `${import.meta.env.BASE_URL}video/story-master-gop1.mp4`
+const FILM_MOBILE = `${import.meta.env.BASE_URL}video/story-master-mobile-gop1.mp4`
 const HERO_FRUIT_FRAME = `${import.meta.env.BASE_URL}hero-fruit-frame.webp`
 const HERO_PRODUCT = `${import.meta.env.BASE_URL}apkmason-can.webp`
 const FRUIT_ORBIT = `${import.meta.env.BASE_URL}fruit-orbit.webp`
@@ -16,6 +14,8 @@ const MOBILE_SEEK_THRESHOLD = 1 / MOBILE_SEEK_FRAME_RATE - 0.002
 const BEAT_BLUR_STEP = 2
 const BEAT_BLUR_MAX = 8
 const HERO_PARALLAX_RANGE = 15
+/** The film runs out before the scroll does, so the closing frame holds while the last beat resolves. */
+const FILM_SCROLL_END = 0.94
 
 type Beat = {
   eyebrow: string
@@ -86,13 +86,11 @@ function App() {
   const closingRef = useRef<HTMLElement>(null)
   const storyRef = useRef<HTMLElement>(null)
   const glowRef = useRef<HTMLDivElement>(null)
-  const videoOneRef = useRef<HTMLVideoElement>(null)
-  const videoTwoRef = useRef<HTMLVideoElement>(null)
+  const videoRef = useRef<HTMLVideoElement>(null)
   const beatRefs = useRef<Array<HTMLDivElement | null>>([])
   const progressRef = useRef<HTMLDivElement>(null)
   const chapterRef = useRef<HTMLSpanElement>(null)
   const syncRef = useRef<(() => void) | null>(null)
-  const readyCountRef = useRef(0)
   const [filmStatus, setFilmStatus] = useState<'loading' | 'ready' | 'error'>('loading')
   const [reducedMotion, setReducedMotion] = useState(false)
 
@@ -105,9 +103,9 @@ function App() {
   }, [])
 
   useEffect(() => {
-    const finalVideo = videoTwoRef.current
-    if (reducedMotion && finalVideo?.duration && Number.isFinite(finalVideo.duration)) {
-      finalVideo.currentTime = Math.max(finalVideo.duration * 0.92, 0.01)
+    const film = videoRef.current
+    if (reducedMotion && film?.duration && Number.isFinite(film.duration)) {
+      film.currentTime = Math.max(film.duration - 0.05, 0.01)
     }
   }, [reducedMotion, filmStatus])
 
@@ -184,8 +182,7 @@ function App() {
     if (!story || !glow) return
 
     const compactViewport = window.matchMedia(MOBILE_MEDIA_QUERY)
-    const scrubberOne = videoOneRef.current ? createScrubber(videoOneRef.current) : null
-    const scrubberTwo = videoTwoRef.current ? createScrubber(videoTwoRef.current) : null
+    const scrubber = videoRef.current ? createScrubber(videoRef.current) : null
 
     let frame = 0
     let lastProgress = -1
@@ -194,28 +191,12 @@ function App() {
     let scrollableDistance = 1
     const lastBeatOpacity = beats.map(() => -1)
     const lastBeatBlur = beats.map(() => -1)
-    const layerState = [
-      { video: videoOneRef.current, opacity: -1 },
-      { video: videoTwoRef.current, opacity: -1 },
-    ]
 
     /** Layout reads happen here only — never inside the per-frame loop. */
     const measure = () => {
       storyTop = story.getBoundingClientRect().top + window.scrollY
       scrollableDistance = Math.max(story.offsetHeight - window.innerHeight, 1)
       lastProgress = -1
-    }
-
-    const applyLayer = (index: number, opacity: number) => {
-      const layer = layerState[index]
-      const video = layer.video
-      if (!video) return
-      const next = Math.round(opacity * 1000) / 1000
-      if (next === layer.opacity) return
-      layer.opacity = next
-      video.style.opacity = String(next)
-      // Drop the fully faded layer out of the compositor instead of blending a transparent full-screen video.
-      video.style.visibility = next <= 0 ? 'hidden' : 'visible'
     }
 
     const update = () => {
@@ -226,13 +207,7 @@ function App() {
 
       glow.style.setProperty('--story-progress', progress.toFixed(4))
 
-      const crossfade = clamp((progress - 0.455) / 0.1)
-      applyLayer(0, 1 - crossfade)
-      applyLayer(1, crossfade)
-
-      const useMobileCadence = compactViewport.matches
-      if (crossfade < 1) scrubberOne?.seek(progress / 0.51, useMobileCadence)
-      if (crossfade > 0) scrubberTwo?.seek((progress - 0.46) / 0.47, useMobileCadence)
+      scrubber?.seek(progress / FILM_SCROLL_END, compactViewport.matches)
 
       for (let index = 0; index < beats.length; index += 1) {
         const beat = beatRefs.current[index]
@@ -288,20 +263,18 @@ function App() {
       window.removeEventListener('resize', handleResize)
       window.removeEventListener('orientationchange', handleResize)
       if (frame) window.cancelAnimationFrame(frame)
-      scrubberOne?.dispose()
-      scrubberTwo?.dispose()
+      scrubber?.dispose()
     }
   }, [reducedMotion])
 
   const handleMetadata = useCallback(
-    (event: React.SyntheticEvent<HTMLVideoElement>, finalFrame = false) => {
+    (event: React.SyntheticEvent<HTMLVideoElement>) => {
       const video = event.currentTarget
       const duration = video.duration
       if (Number.isFinite(duration) && duration > 0) {
-        video.currentTime = reducedMotion && finalFrame ? Math.max(duration * 0.92, 0.01) : 0.01
+        video.currentTime = reducedMotion ? Math.max(duration - 0.05, 0.01) : 0.01
       }
-      readyCountRef.current += 1
-      if (readyCountRef.current >= 2) setFilmStatus('ready')
+      setFilmStatus('ready')
       syncRef.current?.()
     },
     [reducedMotion],
@@ -374,9 +347,11 @@ function App() {
               <p>CHARGING COLOR</p>
             </div>
 
+            {/* One master film: the two shots are joined by a crossfade baked into the encode, so the
+                page runs a single decoder and never blends two full-screen video layers at runtime. */}
             <video
-              ref={videoOneRef}
-              className="story-video story-video-one"
+              ref={videoRef}
+              className="story-video"
               preload="metadata"
               muted
               playsInline
@@ -384,27 +359,11 @@ function App() {
               disableRemotePlayback
               tabIndex={-1}
               aria-hidden="true"
-              onLoadedMetadata={(event) => handleMetadata(event)}
+              onLoadedMetadata={handleMetadata}
               onError={handleVideoError}
             >
-              <source src={VIDEO_ONE_MOBILE} type="video/mp4" media={MOBILE_MEDIA_QUERY} />
-              <source src={VIDEO_ONE_DESKTOP} type="video/mp4" />
-            </video>
-            <video
-              ref={videoTwoRef}
-              className="story-video story-video-two"
-              preload="metadata"
-              muted
-              playsInline
-              disablePictureInPicture
-              disableRemotePlayback
-              tabIndex={-1}
-              aria-hidden="true"
-              onLoadedMetadata={(event) => handleMetadata(event, true)}
-              onError={handleVideoError}
-            >
-              <source src={VIDEO_TWO_MOBILE} type="video/mp4" media={MOBILE_MEDIA_QUERY} />
-              <source src={VIDEO_TWO_DESKTOP} type="video/mp4" />
+              <source src={FILM_MOBILE} type="video/mp4" media={MOBILE_MEDIA_QUERY} />
+              <source src={FILM_DESKTOP} type="video/mp4" />
             </video>
 
             <div className="stage-vignette" aria-hidden="true" />
