@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.1] - 2026-08-27
+
+### Optimized
+- **Social card 2044 KB -> 256 KB (-87 %)**: `og.png` was a 1729x910 lossless PNG of what is essentially a photograph — neon gradients and water droplets on black, the worst possible content for PNG. Re-encoded as a progressive JPEG at 1200x632, the canonical Open Graph size and larger than any platform actually renders.
+- Encoded with **4:4:4 chroma** rather than the usual 4:2:0: the card is saturated magenta and orange against pure black plus white display type, so subsampled chroma smears exactly the edges the card is made of. 4:4:4 costs ~30 % more bytes and holds the neon streaks and droplet detail at 200 % zoom.
+- `og:image:type` is now declared, and `og:image:width`/`height` follow the new dimensions.
+
 ## [1.2.0] - 2026-08-27
 
 ### Optimized
